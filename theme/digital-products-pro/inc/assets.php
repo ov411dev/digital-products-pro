@@ -21,8 +21,12 @@ function dpp_enqueue_assets() {
 	$script_handle = '';
 
 	if ( file_exists( $manifest ) ) {
-		$manifest_contents = wp_remote_get( $manifest );
-		$assets            = json_decode( $manifest_contents, true );
+		$assets = wp_json_file_decode(
+			$manifest,
+			array(
+				'associative' => true,
+			)
+		);
 
 		if ( is_array( $assets ) ) {
 			$style_index = 0;
@@ -34,10 +38,6 @@ function dpp_enqueue_assets() {
 
 				$file = ltrim( $entry['file'], '/' );
 
-				/*
-				 * A standalone CSS input appears as its own manifest entry,
-				 * with the generated stylesheet stored in "file".
-				 */
 				if ( str_ends_with( $file, '.css' ) ) {
 					wp_enqueue_style(
 						'dpp-vite-style-' . $style_index,
@@ -49,9 +49,6 @@ function dpp_enqueue_assets() {
 					++$style_index;
 				}
 
-				/*
-				 * JavaScript entries may also reference imported CSS files.
-				 */
 				if ( ! empty( $entry['css'] ) && is_array( $entry['css'] ) ) {
 					foreach ( $entry['css'] as $css_file ) {
 						wp_enqueue_style(
