@@ -1,0 +1,13 @@
+{
+  "name": "ov411dev/digital-products-pro",
+  "description": "WordPress theme, plugin, automation workflows, and development tooling for selling digital products.",
+  "type": "project",
+  "license": "GPL-2.0-or-later",
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "wp-coding-standards/wpcs": "^3.3"
+  },
+  "scripts": {"lint:php": "phpcs", "fix:php": "phpcbf"},
+  "config": {"allow-plugins": {"dealerdirect/phpcodesniffer-composer-installer": true}, "sort-packages": true}
+}
