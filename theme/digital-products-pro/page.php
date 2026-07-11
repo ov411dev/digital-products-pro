@@ -1,6 +1,17 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Page template.
+ *
+ * @package DigitalProductsPro
+ */
+
+get_header();
+?>
 <main class="container page-content">
-<?php while(have_posts()): the_post(); ?>
+<?php
+while ( have_posts() ) :
+	the_post();
+	?>
 <article><h1><?php the_title(); ?></h1><?php the_content(); ?></article>
 <?php endwhile; ?>
 </main>

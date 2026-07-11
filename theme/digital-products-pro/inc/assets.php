@@ -15,13 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function dpp_enqueue_assets() {
-	$theme_dir    = get_template_directory();
-	$theme_uri    = get_template_directory_uri();
-	$manifest     = $theme_dir . '/dist/manifest.json';
+	$theme_dir     = get_template_directory();
+	$theme_uri     = get_template_directory_uri();
+	$manifest      = $theme_dir . '/dist/manifest.json';
 	$script_handle = '';
 
 	if ( file_exists( $manifest ) ) {
-		$manifest_contents = file_get_contents( $manifest );
+		$manifest_contents = wp_remote_get( $manifest );
 		$assets            = json_decode( $manifest_contents, true );
 
 		if ( is_array( $assets ) ) {
