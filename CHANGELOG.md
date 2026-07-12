@@ -29,3 +29,8 @@ All notable changes to this project will be documented here.
 - Vite asset loading
 - Mobile navigation
 - WordPress coding standards
+
+### Added
+- Interactive six-stage platform workflow showcase
+- Keyboard navigation for workflow stages
+- Centralized workflow data layer
