@@ -1,1 +1,39 @@
-document.addEventListener('DOMContentLoaded',()=>{const m=document.querySelector('.menu-toggle'),n=document.querySelector('.main-nav'),b=document.querySelector('.mode-toggle');if(window.DPPTheme&&DPPTheme.darkModeDefault&&!localStorage.getItem('dpp-theme-mode'))document.body.classList.add('dark-mode');if(localStorage.getItem('dpp-theme-mode')==='dark')document.body.classList.add('dark-mode');if(m&&n)m.addEventListener('click',()=>n.classList.toggle('open'));if(b)b.addEventListener('click',()=>{document.body.classList.toggle('dark-mode');localStorage.setItem('dpp-theme-mode',document.body.classList.contains('dark-mode')?'dark':'light')});document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{if(n)n.classList.remove('open')}));});
+document.addEventListener('DOMContentLoaded', () => {
+  const menuButton = document.querySelector('[data-menu-toggle]');
+  const navigation = document.querySelector('[data-primary-nav]');
+  const themeButton = document.querySelector('[data-theme-toggle]');
+  const storedMode = localStorage.getItem('dpp-theme-mode');
+
+  if (window.DPPTheme && DPPTheme.darkModeDefault && !storedMode) {
+    document.body.classList.add('dark-mode');
+  }
+
+  if (storedMode === 'dark') {
+    document.body.classList.add('dark-mode');
+  }
+
+  if (menuButton && navigation) {
+    menuButton.addEventListener('click', () => {
+      const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', String(!isOpen));
+      navigation.classList.toggle('is-open', !isOpen);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        menuButton.setAttribute('aria-expanded', 'false');
+        navigation.classList.remove('is-open');
+      }
+    });
+  }
+
+  if (themeButton) {
+    themeButton.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem(
+        'dpp-theme-mode',
+        document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+      );
+    });
+  }
+});
