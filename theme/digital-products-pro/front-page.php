@@ -9,6 +9,7 @@ get_header();
 ?>
 <main>
 <?php dpp_section( 'hero' ); ?>
+<?php dpp_section( 'workflow-showcase' ); ?>
 <?php dpp_section( 'features' ); ?>
 <?php dpp_section( 'how-it-works' ); ?>
 <?php dpp_section( 'modules' ); ?>

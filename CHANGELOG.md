@@ -13,3 +13,19 @@ All notable changes to this project will be documented here.
 - Reusable block pattern
 - n8n automation documentation
 - Pricing, FAQ, testimonials, modules, workflow, and CTA sections
+
+## [0.3.0] - Unreleased
+
+### Added
+- Premium header
+- Premium hero
+- Design system
+- Centralized content layer
+
+### Changed
+- Hero and dashboard now use dpp_option()
+
+### Fixed
+- Vite asset loading
+- Mobile navigation
+- WordPress coding standards
