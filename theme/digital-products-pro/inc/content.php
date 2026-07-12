@@ -38,6 +38,70 @@ function dpp_content_defaults() {
 		'dpp_dashboard_orders_delta'    => '+18%',
 		'dpp_dashboard_customers_delta' => '+11%',
 		'dpp_dashboard_downloads_delta' => '+31%',
+		'dpp_dashboard_trend'           => array(
+			18,
+			24,
+			22,
+			35,
+			31,
+			46,
+			52,
+			49,
+			63,
+			72,
+			78,
+			91,
+		),
+		'dpp_dashboard_activity'        => array(
+			array(
+				'time'   => '09:42',
+				'title'  => __( 'Order #1203 completed', 'digital-products-pro-full' ),
+				'detail' => __( 'AI Prompt Pack', 'digital-products-pro-full' ),
+				'type'   => 'order',
+			),
+			array(
+				'time'   => '09:43',
+				'title'  => __( 'Telegram notification sent', 'digital-products-pro-full' ),
+				'detail' => __( 'Sales channel', 'digital-products-pro-full' ),
+				'type'   => 'telegram',
+			),
+			array(
+				'time'   => '09:44',
+				'title'  => __( 'Download access generated', 'digital-products-pro-full' ),
+				'detail' => __( 'Secure delivery', 'digital-products-pro-full' ),
+				'type'   => 'delivery',
+			),
+			array(
+				'time'   => '09:45',
+				'title'  => __( 'CRM contact updated', 'digital-products-pro-full' ),
+				'detail' => __( 'Customer automation', 'digital-products-pro-full' ),
+				'type'   => 'crm',
+			),
+		),
+		'dpp_dashboard_connections'     => array(
+			array(
+				'label'  => 'WooCommerce',
+				'status' => __( 'Connected', 'digital-products-pro-full' ),
+				'health' => 100,
+			),
+			array(
+				'label'  => 'n8n',
+				'status' => __( 'Operational', 'digital-products-pro-full' ),
+				'health' => 96,
+			),
+			array(
+				'label'  => 'Telegram',
+				'status' => __( 'Connected', 'digital-products-pro-full' ),
+				'health' => 100,
+			),
+			array(
+				'label'  => 'Email',
+				'status' => __( 'Operational', 'digital-products-pro-full' ),
+				'health' => 98,
+			),
+		),
+		'dpp_dashboard_chart_label'     => __( 'Revenue trend', 'digital-products-pro-full' ),
+		'dpp_dashboard_activity_title'  => __( 'Recent activity', 'digital-products-pro-full' ),
 		'dpp_technology_badges'         => array(
 			'WordPress',
 			'WooCommerce',
@@ -120,4 +184,80 @@ function dpp_dashboard_data() {
 			'delta' => (string) dpp_option( 'dpp_dashboard_downloads_delta' ),
 		),
 	);
+}
+
+/**
+ * Return normalized dashboard trend values.
+ *
+ * @return array<int, float>
+ */
+function dpp_dashboard_trend() {
+	$trend = dpp_option( 'dpp_dashboard_trend', array() );
+
+	if ( ! is_array( $trend ) ) {
+		return array();
+	}
+
+	return array_map(
+		static function ( $value ) {
+			return (float) $value;
+		},
+		$trend
+	);
+}
+
+/**
+ * Return dashboard activity entries.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function dpp_dashboard_activity() {
+	$activity = dpp_option( 'dpp_dashboard_activity', array() );
+
+	return is_array( $activity ) ? $activity : array();
+}
+
+/**
+ * Return dashboard connection-health entries.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function dpp_dashboard_connections() {
+	$connections = dpp_option( 'dpp_dashboard_connections', array() );
+
+	return is_array( $connections ) ? $connections : array();
+}
+
+/**
+ * Convert dashboard trend values into SVG polyline points.
+ *
+ * @param array<int, float> $values Chart values.
+ * @param float             $width  SVG chart width.
+ * @param float             $height SVG chart height.
+ *
+ * @return string
+ */
+function dpp_dashboard_chart_points( $values, $width = 520.0, $height = 160.0 ) {
+	if ( count( $values ) < 2 ) {
+		return '';
+	}
+
+	$minimum = min( $values );
+	$maximum = max( $values );
+	$range   = max( 1.0, $maximum - $minimum );
+	$step    = $width / ( count( $values ) - 1 );
+	$points  = array();
+
+	foreach ( $values as $index => $value ) {
+		$x = $index * $step;
+		$y = $height - ( ( $value - $minimum ) / $range * $height );
+
+		$points[] = sprintf(
+			'%1$.2f,%2$.2f',
+			$x,
+			$y
+		);
+	}
+
+	return implode( ' ', $points );
 }
