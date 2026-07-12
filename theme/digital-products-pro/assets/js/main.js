@@ -1,4 +1,6 @@
+import { initializeWorkflowShowcase } from './workflow.js';
 document.addEventListener('DOMContentLoaded', () => {
+  initializeWorkflowShowcase();
   const menuButton = document.querySelector('[data-menu-toggle]');
   const navigation = document.querySelector('[data-primary-nav]');
   const themeButton = document.querySelector('[data-theme-toggle]');
