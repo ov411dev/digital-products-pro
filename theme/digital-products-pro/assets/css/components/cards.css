@@ -1,0 +1,36 @@
+.dpp-card {
+  border: var(--dpp-border-width) solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-lg);
+  background: var(--dpp-color-surface-raised);
+  box-shadow: var(--dpp-shadow-sm);
+  transition:
+    transform var(--dpp-transition-base),
+    box-shadow var(--dpp-transition-base),
+    border-color var(--dpp-transition-base);
+}
+
+.dpp-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--dpp-color-primary-300);
+  box-shadow: var(--dpp-shadow-md);
+}
+
+.dpp-card__body {
+  padding: clamp(1.5rem, 3vw, 2rem);
+}
+
+.dpp-card__icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-primary-100);
+  color: var(--dpp-color-primary-700);
+}
+
+body.dark-mode .dpp-card__icon {
+  background: rgb(124 58 237 / 18%);
+  color: var(--dpp-color-primary-300);
+}

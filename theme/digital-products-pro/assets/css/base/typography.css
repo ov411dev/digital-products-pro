@@ -1,0 +1,54 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-block: 0;
+  color: var(--dpp-color-text);
+  font-weight: var(--dpp-font-weight-bold);
+  line-height: var(--dpp-line-height-heading);
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  font-size: clamp(2.75rem, 7vw, 5.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+h3 {
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+}
+
+p {
+  margin-block: 0;
+}
+
+.dpp-lead {
+  color: var(--dpp-color-text-muted);
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  line-height: 1.7;
+}
+
+.dpp-eyebrow {
+  color: var(--dpp-color-primary-600);
+  font-size: var(--dpp-font-size-sm);
+  font-weight: var(--dpp-font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dpp-gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--dpp-color-primary-600),
+    var(--dpp-color-accent-500)
+  );
+  background-clip: text;
+  color: transparent;
+}

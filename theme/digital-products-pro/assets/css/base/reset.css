@@ -1,0 +1,55 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  background: var(--dpp-color-background);
+  color: var(--dpp-color-text);
+  font-family: var(--dpp-font-family-sans);
+  font-size: var(--dpp-font-size-base);
+  line-height: var(--dpp-line-height-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--dpp-color-accent-400);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--dpp-color-primary-300);
+  color: var(--dpp-color-gray-950);
+}

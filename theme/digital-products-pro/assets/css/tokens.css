@@ -1,0 +1,117 @@
+:root {
+  /* Brand colors */
+  --dpp-color-primary-50: #f5f3ff;
+  --dpp-color-primary-100: #ede9fe;
+  --dpp-color-primary-300: #c4b5fd;
+  --dpp-color-primary-500: #8b5cf6;
+  --dpp-color-primary-600: #7c3aed;
+  --dpp-color-primary-700: #6d28d9;
+  --dpp-color-primary-900: #4c1d95;
+
+  --dpp-color-accent-400: #22d3ee;
+  --dpp-color-accent-500: #06b6d4;
+  --dpp-color-accent-600: #0891b2;
+
+  /* Neutral colors */
+  --dpp-color-white: #ffffff;
+  --dpp-color-gray-50: #f8fafc;
+  --dpp-color-gray-100: #f1f5f9;
+  --dpp-color-gray-200: #e2e8f0;
+  --dpp-color-gray-300: #cbd5e1;
+  --dpp-color-gray-500: #64748b;
+  --dpp-color-gray-600: #475569;
+  --dpp-color-gray-700: #334155;
+  --dpp-color-gray-800: #1e293b;
+  --dpp-color-gray-900: #0f172a;
+  --dpp-color-gray-950: #020617;
+
+  /* Semantic colors */
+  --dpp-color-success: #16a34a;
+  --dpp-color-warning: #d97706;
+  --dpp-color-error: #dc2626;
+
+  /* Theme surfaces */
+  --dpp-color-background: var(--dpp-color-white);
+  --dpp-color-surface: var(--dpp-color-gray-50);
+  --dpp-color-surface-raised: var(--dpp-color-white);
+  --dpp-color-text: var(--dpp-color-gray-900);
+  --dpp-color-text-muted: var(--dpp-color-gray-500);
+  --dpp-color-border: var(--dpp-color-gray-200);
+
+  /* Typography */
+  --dpp-font-family-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  --dpp-font-size-xs: 0.75rem;
+  --dpp-font-size-sm: 0.875rem;
+  --dpp-font-size-base: 1rem;
+  --dpp-font-size-lg: 1.125rem;
+  --dpp-font-size-xl: 1.25rem;
+  --dpp-font-size-2xl: 1.5rem;
+  --dpp-font-size-3xl: 1.875rem;
+  --dpp-font-size-4xl: 2.25rem;
+  --dpp-font-size-5xl: 3rem;
+  --dpp-font-size-6xl: 3.75rem;
+
+  --dpp-line-height-tight: 1.1;
+  --dpp-line-height-heading: 1.2;
+  --dpp-line-height-body: 1.65;
+
+  --dpp-font-weight-normal: 400;
+  --dpp-font-weight-medium: 500;
+  --dpp-font-weight-semibold: 600;
+  --dpp-font-weight-bold: 700;
+  --dpp-font-weight-extrabold: 800;
+
+  /* Spacing */
+  --dpp-space-1: 0.25rem;
+  --dpp-space-2: 0.5rem;
+  --dpp-space-3: 0.75rem;
+  --dpp-space-4: 1rem;
+  --dpp-space-5: 1.25rem;
+  --dpp-space-6: 1.5rem;
+  --dpp-space-8: 2rem;
+  --dpp-space-10: 2.5rem;
+  --dpp-space-12: 3rem;
+  --dpp-space-16: 4rem;
+  --dpp-space-20: 5rem;
+  --dpp-space-24: 6rem;
+
+  /* Layout */
+  --dpp-container-width: 72.5rem;
+  --dpp-content-width: 47.5rem;
+  --dpp-page-gutter: clamp(1.25rem, 4vw, 2rem);
+  --dpp-section-space: clamp(4rem, 8vw, 7rem);
+
+  /* Borders and radius */
+  --dpp-border-width: 1px;
+  --dpp-radius-sm: 0.5rem;
+  --dpp-radius-md: 0.875rem;
+  --dpp-radius-lg: 1.25rem;
+  --dpp-radius-xl: 1.75rem;
+  --dpp-radius-pill: 999px;
+
+  /* Shadows */
+  --dpp-shadow-sm: 0 2px 8px rgb(15 23 42 / 6%);
+  --dpp-shadow-md: 0 14px 36px rgb(15 23 42 / 10%);
+  --dpp-shadow-lg: 0 30px 80px rgb(15 23 42 / 16%);
+
+  /* Motion */
+  --dpp-transition-fast: 160ms ease;
+  --dpp-transition-base: 240ms ease;
+  --dpp-transition-slow: 400ms ease;
+}
+
+body.dark-mode {
+  --dpp-color-background: var(--dpp-color-gray-950);
+  --dpp-color-surface: var(--dpp-color-gray-900);
+  --dpp-color-surface-raised: var(--dpp-color-gray-800);
+  --dpp-color-text: var(--dpp-color-gray-50);
+  --dpp-color-text-muted: var(--dpp-color-gray-300);
+  --dpp-color-border: var(--dpp-color-gray-700);
+
+  --dpp-shadow-sm: 0 2px 8px rgb(0 0 0 / 20%);
+  --dpp-shadow-md: 0 14px 36px rgb(0 0 0 / 28%);
+  --dpp-shadow-lg: 0 30px 80px rgb(0 0 0 / 40%);
+}
