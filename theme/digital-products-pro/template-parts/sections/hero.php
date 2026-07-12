@@ -5,6 +5,10 @@
  * @package DigitalProductsPro
  */
 
+$dashboard_data    = dpp_dashboard_data();
+$technology_badges = dpp_option( 'dpp_technology_badges', array() );
+$automation_items  = dpp_option( 'dpp_automation_items', array() );
+$recent_products   = dpp_option( 'dpp_recent_products', array() );
 ?>
 <section class="dpp-hero" aria-labelledby="dpp-hero-title">
 	<div class="dpp-hero__glow dpp-hero__glow--one" aria-hidden="true"></div>
@@ -12,39 +16,100 @@
 
 	<div class="container dpp-hero__layout">
 		<div class="dpp-hero__content">
-			<p class="dpp-eyebrow"><?php esc_html_e( 'The complete digital commerce platform', 'digital-products-pro-full' ); ?></p>
-			<h1 id="dpp-hero-title"><?php esc_html_e( 'Build, sell, and automate your digital product business.', 'digital-products-pro-full' ); ?></h1>
-			<p class="dpp-lead dpp-hero__lead">
-				<?php esc_html_e( 'Create digital products, accept payments, automate delivery, and manage customers from one WordPress platform powered by WooCommerce, AI, and n8n.', 'digital-products-pro-full' ); ?>
+			<p class="dpp-eyebrow">
+				<?php echo esc_html( dpp_option( 'dpp_badge' ) ); ?>
 			</p>
+
+			<h1 id="dpp-hero-title">
+				<?php echo esc_html( dpp_option( 'dpp_hero_title' ) ); ?>
+			</h1>
+
+			<p class="dpp-lead dpp-hero__lead">
+				<?php echo esc_html( dpp_option( 'dpp_hero_text' ) ); ?>
+			</p>
+
 			<div class="dpp-hero__actions">
-				<a class="dpp-button dpp-button--primary dpp-button--large" href="<?php echo esc_url( dpp_get( 'dpp_primary_url', '#pricing' ) ); ?>"><?php esc_html_e( 'Get Started', 'digital-products-pro-full' ); ?></a>
-				<a class="dpp-button dpp-button--secondary dpp-button--large" href="#features"><?php esc_html_e( 'Explore the Platform', 'digital-products-pro-full' ); ?></a>
+				<a
+					class="dpp-button dpp-button--primary dpp-button--large"
+					href="<?php echo esc_url( dpp_option( 'dpp_primary_url' ) ); ?>"
+				>
+					<?php echo esc_html( dpp_option( 'dpp_primary_button' ) ); ?>
+				</a>
+
+				<a
+					class="dpp-button dpp-button--secondary dpp-button--large"
+					href="<?php echo esc_url( dpp_option( 'dpp_secondary_url' ) ); ?>"
+				>
+					<?php echo esc_html( dpp_option( 'dpp_secondary_button' ) ); ?>
+				</a>
 			</div>
-			<div class="dpp-tech-row">
-				<span>WordPress</span><span>WooCommerce</span><span>AI</span><span>n8n</span><span>Docker</span><span>Cloudflare</span>
-			</div>
+
+			<?php if ( is_array( $technology_badges ) && ! empty( $technology_badges ) ) : ?>
+				<div
+					class="dpp-tech-row"
+					aria-label="<?php esc_attr_e( 'Platform technologies', 'digital-products-pro-full' ); ?>"
+				>
+					<?php foreach ( $technology_badges as $badge ) : ?>
+						<span><?php echo esc_html( $badge ); ?></span>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 
-		<div class="dpp-dashboard" aria-label="<?php esc_attr_e( 'Platform dashboard preview', 'digital-products-pro-full' ); ?>">
+		<div
+			class="dpp-dashboard"
+			aria-label="<?php esc_attr_e( 'Platform dashboard preview', 'digital-products-pro-full' ); ?>"
+		>
 			<div class="dpp-dashboard__topbar">
-				<div><p class="dpp-dashboard__eyebrow">Platform overview</p><h2>Business Command Center</h2></div>
-				<span class="dpp-dashboard__status"><span aria-hidden="true"></span>Live</span>
+				<div>
+					<p class="dpp-dashboard__eyebrow">
+						<?php echo esc_html( dpp_option( 'dpp_dashboard_eyebrow' ) ); ?>
+					</p>
+					<h2><?php echo esc_html( dpp_option( 'dpp_dashboard_title' ) ); ?></h2>
+				</div>
+
+				<span class="dpp-dashboard__status">
+					<span aria-hidden="true"></span>
+					<?php echo esc_html( dpp_option( 'dpp_dashboard_status' ) ); ?>
+				</span>
 			</div>
+
 			<div class="dpp-dashboard__metrics">
-				<article><span>Revenue</span><strong>$12,480</strong><small>+24%</small></article>
-				<article><span>Orders</span><strong>128</strong><small>+18%</small></article>
-				<article><span>Customers</span><strong>72</strong><small>+11%</small></article>
-				<article><span>Downloads</span><strong>564</strong><small>+31%</small></article>
+				<?php foreach ( $dashboard_data as $metric ) : ?>
+					<article>
+						<span><?php echo esc_html( $metric['label'] ); ?></span>
+						<strong><?php echo esc_html( $metric['value'] ); ?></strong>
+						<small><?php echo esc_html( $metric['delta'] ); ?></small>
+					</article>
+				<?php endforeach; ?>
 			</div>
+
 			<div class="dpp-dashboard__body">
 				<div class="dpp-panel">
-					<h3>Automation status</h3>
-					<ul><li>✓ Order delivery</li><li>✓ Telegram notification</li><li>✓ CRM synchronization</li><li>✓ Follow-up email</li></ul>
+					<h3><?php esc_html_e( 'Automation status', 'digital-products-pro-full' ); ?></h3>
+
+					<?php if ( is_array( $automation_items ) && ! empty( $automation_items ) ) : ?>
+						<ul>
+							<?php foreach ( $automation_items as $item ) : ?>
+								<li>
+									<span aria-hidden="true">✓</span>
+									<?php echo esc_html( $item ); ?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
 				</div>
+
 				<div class="dpp-panel">
-					<h3>Recent products</h3>
-					<ul><li>AI Prompt Pack</li><li>WordPress Theme</li><li>Automation Toolkit</li></ul>
+					<h3><?php esc_html_e( 'Recent products', 'digital-products-pro-full' ); ?></h3>
+
+					<?php if ( is_array( $recent_products ) && ! empty( $recent_products ) ) : ?>
+						<ul>
+							<?php foreach ( $recent_products as $product ) : ?>
+								<li><?php echo esc_html( $product ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
