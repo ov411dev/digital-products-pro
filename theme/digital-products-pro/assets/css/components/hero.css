@@ -135,3 +135,76 @@
     grid-template-columns: auto auto minmax(0, 1fr);
   }
 }
+
+/* Dashboard always uses a dark surface, independent of site color mode. */
+.dpp-dashboard,
+.dpp-dashboard h2,
+.dpp-dashboard h3,
+.dpp-dashboard strong {
+  color: var(--dpp-color-white);
+}
+
+.dpp-dashboard__chart .dpp-dashboard__section-heading h3,
+.dpp-dashboard__activity .dpp-dashboard__section-heading h3,
+.dpp-dashboard__connections .dpp-dashboard__section-heading h3 {
+  color: var(--dpp-color-white);
+}
+
+.dpp-dashboard__section-heading > span,
+.dpp-dashboard__activity time,
+.dpp-dashboard__activity small,
+.dpp-dashboard__connections small {
+  color: #94a3b8;
+}
+
+.dpp-dashboard__chart .dpp-dashboard__section-heading > span,
+.dpp-dashboard__activity .dpp-dashboard__section-heading > span,
+.dpp-dashboard__connections .dpp-dashboard__section-heading > span {
+  color: #cbd5e1;
+}
+
+.dpp-dashboard__chart-line {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  transition: stroke-dashoffset 1.5s ease;
+}
+
+.dpp-dashboard__chart-line.is-drawn {
+  stroke-dashoffset: 0;
+}
+
+.dpp-dashboard__activity li {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity var(--dpp-transition-slow),
+    transform var(--dpp-transition-slow);
+}
+
+.dpp-dashboard__activity li.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dpp-connection-health span {
+  width: 0;
+  transition: width 1s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dpp-dashboard__chart-line {
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+
+  .dpp-dashboard__activity li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .dpp-connection-health span {
+    width: var(--dpp-health);
+    transition: none;
+  }
+}

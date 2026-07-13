@@ -62,6 +62,7 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 		<div
 			class="dpp-dashboard"
 			aria-label="<?php esc_attr_e( 'Platform dashboard preview', 'digital-products-pro-full' ); ?>"
+			data-dashboard
 		>
 			<div class="dpp-dashboard__topbar">
 				<div>
@@ -85,7 +86,9 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 					>
 						<span><?php echo esc_html( $metric['label'] ); ?></span>
 
-						<strong data-dashboard-value>
+						<strong data-dashboard-counter
+							data-dashboard-value="<?php echo esc_attr( $metric['value'] ); ?>"
+						>
 							<?php echo esc_html( $metric['value'] ); ?>
 						</strong>
 
@@ -119,6 +122,7 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 
 						<polyline
 							class="dpp-dashboard__chart-line"
+							data-dashboard-chart-line
 							points="<?php echo esc_attr( $chart_points ); ?>"
 							fill="none"
 							stroke="url(#dpp-chart-gradient)"
@@ -143,7 +147,7 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 					<?php if ( ! empty( $dashboard_activity ) ) : ?>
 						<ul>
 							<?php foreach ( $dashboard_activity as $activity_item ) : ?>
-								<li>
+								<li data-dashboard-activity>
 									<time><?php echo esc_html( $activity_item['time'] ); ?></time>
 
 									<span
@@ -181,6 +185,8 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 										aria-label="<?php echo esc_attr( $connection['health'] . '% health' ); ?>"
 									>
 										<span
+											data-dashboard-health
+											data-dashboard-health-value="<?php echo esc_attr( (string) $connection['health'] ); ?>"
 											style="--dpp-health: <?php echo esc_attr( (string) $connection['health'] ); ?>%"
 										></span>
 									</div>
