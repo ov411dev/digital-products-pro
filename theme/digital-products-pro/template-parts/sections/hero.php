@@ -19,15 +19,15 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 
 	<div class="container dpp-hero__layout">
 		<div class="dpp-hero__content">
-			<p class="dpp-eyebrow">
+			<p class="dpp-eyebrow" data-customize-hero-badge>
 				<?php echo esc_html( dpp_option( 'dpp_badge' ) ); ?>
 			</p>
 
-			<h1 id="dpp-hero-title">
+			<h1 id="dpp-hero-title" data-customize-hero-title>
 				<?php echo esc_html( dpp_option( 'dpp_hero_title' ) ); ?>
 			</h1>
 
-			<p class="dpp-lead dpp-hero__lead">
+			<p class="dpp-lead dpp-hero__lead" data-customize-hero-text>
 				<?php echo esc_html( dpp_option( 'dpp_hero_text' ) ); ?>
 			</p>
 
@@ -35,6 +35,7 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 				<a
 					class="dpp-button dpp-button--primary dpp-button--large"
 					href="<?php echo esc_url( dpp_option( 'dpp_primary_url' ) ); ?>"
+					data-customize-primary-button
 				>
 					<?php echo esc_html( dpp_option( 'dpp_primary_button' ) ); ?>
 				</a>
@@ -42,6 +43,7 @@ $technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 				<a
 					class="dpp-button dpp-button--secondary dpp-button--large"
 					href="<?php echo esc_url( dpp_option( 'dpp_secondary_url' ) ); ?>"
+					data-customize-secondary-button
 				>
 					<?php echo esc_html( dpp_option( 'dpp_secondary_button' ) ); ?>
 				</a>
