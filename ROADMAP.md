@@ -17,3 +17,24 @@
 - Add packaged n8n workflow exports
 - Add onboarding wizard
 - Add automated theme release workflow
+
+v0.3.0  Premium Landing Page
+    ✓ Design System
+    ✓ Premium Header
+    ✓ Premium Hero
+    ✓ Content Layer
+    □ Workflow Showcase
+    □ Dashboard Animation
+    □ Theme Customizer
+
+v0.4.0
+    WooCommerce Integration
+
+v0.5.0
+    Digital Product Library
+
+v0.6.0
+    AI + n8n Automation
+
+v1.0.0
+    Commercial Release

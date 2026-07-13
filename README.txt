@@ -1,14 +1,9 @@
-Digital Products Pro Full
+After extracting into the repository root, add these two imports to main.css after the other component imports:
 
-Includes:
-- Responsive landing page
-- English demo copy
-- Dark/light toggle
-- Customizer fields
-- WooCommerce support
-- Gutenberg theme.json
-- Block pattern
-- n8n automation documentation
-- Pricing, FAQ, testimonials, modules, automation, and CTA sections
+@import './components/header.css';
+@import './components/hero.css';
 
-Original code and original placeholder content. Replace all text, brand assets, prices, product details, and links with your own.
+Then run:
+npm run build
+npm run lint:js
+composer lint:php

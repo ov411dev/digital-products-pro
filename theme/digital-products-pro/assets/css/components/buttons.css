@@ -1,0 +1,60 @@
+.dpp-button,
+.btn {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dpp-space-2);
+  padding: 0.75rem 1.25rem;
+  border: var(--dpp-border-width) solid transparent;
+  border-radius: var(--dpp-radius-md);
+  cursor: pointer;
+  font-weight: var(--dpp-font-weight-bold);
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    transform var(--dpp-transition-fast),
+    box-shadow var(--dpp-transition-fast),
+    background-color var(--dpp-transition-fast),
+    border-color var(--dpp-transition-fast);
+}
+
+.dpp-button:hover,
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.dpp-button--primary,
+.btn.primary {
+  background: linear-gradient(
+    135deg,
+    var(--dpp-color-primary-600),
+    var(--dpp-color-accent-500)
+  );
+  color: var(--dpp-color-white);
+  box-shadow: var(--dpp-shadow-sm);
+}
+
+.dpp-button--primary:hover,
+.btn.primary:hover {
+  box-shadow: var(--dpp-shadow-md);
+}
+
+.dpp-button--secondary,
+.btn.secondary {
+  border-color: var(--dpp-color-border);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+}
+
+.dpp-button--ghost {
+  background: transparent;
+  color: var(--dpp-color-text);
+}
+
+.dpp-button--large,
+.btn.large {
+  min-height: 3.5rem;
+  padding-inline: 1.75rem;
+  font-size: var(--dpp-font-size-lg);
+}
