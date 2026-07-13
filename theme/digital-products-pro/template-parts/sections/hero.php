@@ -5,10 +5,13 @@
  * @package DigitalProductsPro
  */
 
-$dashboard_data    = dpp_dashboard_data();
-$technology_badges = dpp_option( 'dpp_technology_badges', array() );
-$automation_items  = dpp_option( 'dpp_automation_items', array() );
-$recent_products   = dpp_option( 'dpp_recent_products', array() );
+$dashboard_data        = dpp_dashboard_data();
+$dashboard_trend       = dpp_dashboard_trend();
+$dashboard_activity    = dpp_dashboard_activity();
+$dashboard_connections = dpp_dashboard_connections();
+$chart_points          = dpp_dashboard_chart_points( $dashboard_trend );
+$dashboard_data        = dpp_dashboard_data();
+$technology_badges     = dpp_option( 'dpp_technology_badges', array() );
 ?>
 <section class="dpp-hero" aria-labelledby="dpp-hero-title">
 	<div class="dpp-hero__glow dpp-hero__glow--one" aria-hidden="true"></div>
@@ -75,42 +78,117 @@ $recent_products   = dpp_option( 'dpp_recent_products', array() );
 			</div>
 
 			<div class="dpp-dashboard__metrics">
-				<?php foreach ( $dashboard_data as $metric ) : ?>
-					<article>
+				<?php foreach ( $dashboard_data as $metric_key => $metric ) : ?>
+					<article
+						class="dpp-dashboard__metric"
+						data-dashboard-metric="<?php echo esc_attr( $metric_key ); ?>"
+					>
 						<span><?php echo esc_html( $metric['label'] ); ?></span>
-						<strong><?php echo esc_html( $metric['value'] ); ?></strong>
+
+						<strong data-dashboard-value>
+							<?php echo esc_html( $metric['value'] ); ?>
+						</strong>
+
 						<small><?php echo esc_html( $metric['delta'] ); ?></small>
 					</article>
 				<?php endforeach; ?>
 			</div>
 
-			<div class="dpp-dashboard__body">
-				<div class="dpp-panel">
-					<h3><?php esc_html_e( 'Automation status', 'digital-products-pro-full' ); ?></h3>
+			<div class="dpp-dashboard__chart">
+				<div class="dpp-dashboard__section-heading">
+					<h3>
+						<?php echo esc_html( dpp_option( 'dpp_dashboard_chart_label' ) ); ?>
+					</h3>
 
-					<?php if ( is_array( $automation_items ) && ! empty( $automation_items ) ) : ?>
+					<span><?php esc_html_e( 'Last 12 weeks', 'digital-products-pro-full' ); ?></span>
+				</div>
+
+				<?php if ( ! empty( $chart_points ) ) : ?>
+					<svg
+						viewBox="0 0 520 160"
+						role="img"
+						aria-label="<?php esc_attr_e( 'Revenue trend chart', 'digital-products-pro-full' ); ?>"
+						preserveAspectRatio="none"
+					>
+						<defs>
+							<linearGradient id="dpp-chart-gradient" x1="0" x2="1">
+								<stop offset="0%" stop-color="#8b5cf6"></stop>
+								<stop offset="100%" stop-color="#22d3ee"></stop>
+							</linearGradient>
+						</defs>
+
+						<polyline
+							class="dpp-dashboard__chart-line"
+							points="<?php echo esc_attr( $chart_points ); ?>"
+							fill="none"
+							stroke="url(#dpp-chart-gradient)"
+							stroke-width="5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						></polyline>
+					</svg>
+				<?php endif; ?>
+			</div>
+
+			<div class="dpp-dashboard__details">
+				<section class="dpp-dashboard__activity">
+					<div class="dpp-dashboard__section-heading">
+						<h3>
+							<?php echo esc_html( dpp_option( 'dpp_dashboard_activity_title' ) ); ?>
+						</h3>
+
+						<span><?php esc_html_e( 'Live feed', 'digital-products-pro-full' ); ?></span>
+					</div>
+
+					<?php if ( ! empty( $dashboard_activity ) ) : ?>
 						<ul>
-							<?php foreach ( $automation_items as $item ) : ?>
+							<?php foreach ( $dashboard_activity as $activity_item ) : ?>
 								<li>
-									<span aria-hidden="true">✓</span>
-									<?php echo esc_html( $item ); ?>
+									<time><?php echo esc_html( $activity_item['time'] ); ?></time>
+
+									<span
+										class="dpp-activity-dot dpp-activity-dot--<?php echo esc_attr( $activity_item['type'] ); ?>"
+										aria-hidden="true"
+									></span>
+
+									<div>
+										<strong><?php echo esc_html( $activity_item['title'] ); ?></strong>
+										<small><?php echo esc_html( $activity_item['detail'] ); ?></small>
+									</div>
 								</li>
 							<?php endforeach; ?>
 						</ul>
 					<?php endif; ?>
-				</div>
+				</section>
 
-				<div class="dpp-panel">
-					<h3><?php esc_html_e( 'Recent products', 'digital-products-pro-full' ); ?></h3>
+				<section class="dpp-dashboard__connections">
+					<div class="dpp-dashboard__section-heading">
+						<h3><?php esc_html_e( 'Platform connections', 'digital-products-pro-full' ); ?></h3>
+						<span><?php esc_html_e( 'System health', 'digital-products-pro-full' ); ?></span>
+					</div>
 
-					<?php if ( is_array( $recent_products ) && ! empty( $recent_products ) ) : ?>
+					<?php if ( ! empty( $dashboard_connections ) ) : ?>
 						<ul>
-							<?php foreach ( $recent_products as $product ) : ?>
-								<li><?php echo esc_html( $product ); ?></li>
+							<?php foreach ( $dashboard_connections as $connection ) : ?>
+								<li>
+									<div>
+										<strong><?php echo esc_html( $connection['label'] ); ?></strong>
+										<small><?php echo esc_html( $connection['status'] ); ?></small>
+									</div>
+
+									<div
+										class="dpp-connection-health"
+										aria-label="<?php echo esc_attr( $connection['health'] . '% health' ); ?>"
+									>
+										<span
+											style="--dpp-health: <?php echo esc_attr( (string) $connection['health'] ); ?>%"
+										></span>
+									</div>
+								</li>
 							<?php endforeach; ?>
 						</ul>
 					<?php endif; ?>
-				</div>
+				</section>
 			</div>
 		</div>
 	</div>

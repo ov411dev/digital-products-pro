@@ -1,0 +1,25 @@
+.site-footer {
+  border-top: 1px solid var(--dpp-color-border);
+  background: var(--dpp-color-surface);
+  color: var(--dpp-color-text);
+}
+
+.site-footer h3,
+.site-footer h4 {
+  color: var(--dpp-color-text);
+}
+
+.site-footer p,
+.site-footer a {
+  color: var(--dpp-color-text-muted);
+}
+
+.site-footer a {
+  text-decoration: none;
+  transition: color var(--dpp-transition-fast);
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: var(--dpp-color-primary-500);
+}

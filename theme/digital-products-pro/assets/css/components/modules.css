@@ -1,0 +1,24 @@
+.dpp-modules-section {
+  background: var(--dpp-color-surface);
+  color: var(--dpp-color-text);
+}
+
+.dpp-modules-section .section-head h2,
+.dpp-modules-section .module-list h3 {
+  color: var(--dpp-color-text);
+}
+
+.dpp-modules-section .section-head p,
+.dpp-modules-section .module-list p {
+  color: var(--dpp-color-text-muted);
+}
+
+.dpp-modules-section .module-list article {
+  border: 1px solid var(--dpp-color-border);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+}
+
+.dpp-modules-section .module-list small {
+  color: var(--dpp-color-accent-400);
+}
