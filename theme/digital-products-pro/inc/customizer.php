@@ -281,5 +281,37 @@ function dpp_customize_register( $wp_customize ) {
 			'type'    => 'checkbox',
 		)
 	);
+
+	$live_preview_settings = array(
+		'dpp_badge',
+		'dpp_hero_title',
+		'dpp_hero_text',
+		'dpp_primary_button',
+		'dpp_secondary_button',
+	);
+
+	foreach ( $live_preview_settings as $setting_id ) {
+		$setting = $wp_customize->get_setting( $setting_id );
+
+		if ( $setting ) {
+			$setting->transport = 'postMessage';
+		}
+	}
 }
 add_action( 'customize_register', 'dpp_customize_register' );
+
+/**
+ * Enqueue Customizer preview behavior.
+ *
+ * @return void
+ */
+function dpp_customize_preview_assets() {
+	wp_enqueue_script(
+		'dpp-customizer-preview',
+		DPP_URI . '/assets/js/customizer-preview.js',
+		array( 'customize-preview' ),
+		DPP_VERSION,
+		true
+	);
+}
+add_action( 'customize_preview_init', 'dpp_customize_preview_assets' );
