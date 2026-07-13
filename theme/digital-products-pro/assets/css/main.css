@@ -7,9 +7,9 @@
 @import './components/buttons.css';
 @import './components/cards.css';
 @import './components/header.css';
-@import './components/hero.css';
-@import './components/workflow.css';
-@import './components/modules.css';
+@import './sections/hero.css';
+@import './sections/workflow.css';
+@import './sections/modules.css';
 @import './components/footer.css';
 
 /* Mobile layout */
