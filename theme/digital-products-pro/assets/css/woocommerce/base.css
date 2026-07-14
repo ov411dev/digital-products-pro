@@ -1,0 +1,79 @@
+.dpp-commerce {
+  min-height: 60vh;
+  padding-block: var(--dpp-section-space);
+  background: var(--dpp-color-background);
+  color: var(--dpp-color-text);
+}
+
+.dpp-commerce__container {
+  min-width: 0;
+}
+
+.woocommerce .woocommerce-breadcrumb {
+  margin-bottom: var(--dpp-space-6);
+  color: var(--dpp-color-text-muted);
+  font-size: var(--dpp-font-size-sm);
+}
+
+.woocommerce .woocommerce-breadcrumb a {
+  color: var(--dpp-color-primary-600);
+  text-decoration: none;
+}
+
+.woocommerce .woocommerce-result-count,
+.woocommerce .woocommerce-ordering {
+  margin-bottom: var(--dpp-space-6);
+}
+
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+  padding: var(--dpp-space-4) var(--dpp-space-5);
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+  box-shadow: var(--dpp-shadow-sm);
+}
+
+.woocommerce-message {
+  border-left: 0.3rem solid var(--dpp-color-success);
+}
+
+.woocommerce-info {
+  border-left: 0.3rem solid var(--dpp-color-accent-500);
+}
+
+.woocommerce-error {
+  border-left: 0.3rem solid var(--dpp-color-error);
+}
+
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit {
+  min-height: 3rem;
+  padding: 0.8rem 1.25rem;
+  border: 0;
+  border-radius: var(--dpp-radius-md);
+  background: linear-gradient(
+    135deg,
+    var(--dpp-color-primary-600),
+    var(--dpp-color-accent-500)
+  );
+  color: var(--dpp-color-white);
+  font-weight: var(--dpp-font-weight-bold);
+  line-height: 1;
+  transition:
+    transform var(--dpp-transition-fast),
+    box-shadow var(--dpp-transition-fast);
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce #respond input#submit:hover {
+  transform: translateY(-2px);
+  color: var(--dpp-color-white);
+  box-shadow: var(--dpp-shadow-md);
+}
