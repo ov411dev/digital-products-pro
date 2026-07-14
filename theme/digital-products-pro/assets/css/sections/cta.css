@@ -1,0 +1,13 @@
+.final-cta {
+    padding: 95px 0;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(135deg, #111827, #4c1d95);
+}
+.final-cta p {
+    font-size: 20px;
+    color: #e5e7eb;
+}
+.final-cta__actions {
+    margin-top: 1.25rem;
+}

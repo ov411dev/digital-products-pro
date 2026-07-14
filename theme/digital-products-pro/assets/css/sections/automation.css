@@ -1,0 +1,20 @@
+.check-list li {
+    margin: 12px 0;
+}
+.flow-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+    font-weight: 900;
+}
+.flow-card div {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+}
+.flow-card span {
+    font-size: 28px;
+    color: var(--accent);
+}

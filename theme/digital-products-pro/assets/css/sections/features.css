@@ -1,0 +1,20 @@
+.cards {
+    display: grid;
+    gap: 22px;
+}
+.three {
+    grid-template-columns: repeat(3, 1fr);
+}
+.card, .quote, .price-card, .faq-wrap details, .flow-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 12px 38px rgba(15, 23, 42, .06);
+}
+.card b {
+    color: var(--accent);
+}
+.card p, .quote p, .module-list p, .check-list, .price-card li, .faq-wrap p {
+    color: var(--muted);
+}
