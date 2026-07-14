@@ -18,6 +18,10 @@
 @import './sections/workflow.css';
 @import './sections/modules.css';
 @import './components/footer.css';
+@import './woocommerce/base.css';
+@import './woocommerce/archive.css';
+@import './woocommerce/product.css';
+@import './woocommerce/forms.css';
 
 /* Mobile layout */
 @media (max-width: 52rem) {
