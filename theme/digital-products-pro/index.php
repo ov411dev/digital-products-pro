@@ -1,22 +1,41 @@
 <?php
 /**
- * Archive template.
+ * Main fallback template.
  *
  * @package DigitalProductsPro
  */
 
 get_header();
 ?>
-<main>
-<?php dpp_section( 'hero' ); ?>
-<?php dpp_section( 'workflow-showcase' ); ?>
-<?php dpp_section( 'features' ); ?>
-<?php dpp_section( 'how-it-works' ); ?>
-<?php dpp_section( 'modules' ); ?>
-<?php dpp_section( 'automation' ); ?>
-<?php dpp_section( 'testimonials' ); ?>
-<?php dpp_section( 'pricing' ); ?>
-<?php dpp_section( 'faq' ); ?>
-<?php dpp_section( 'cta' ); ?>
+
+<main id="primary" class="container page-content">
+	<?php if ( have_posts() ) : ?>
+
+		<?php while ( have_posts() ) : ?>
+			<?php the_post(); ?>
+
+			<article <?php post_class(); ?>>
+				<h1>
+					<a href="<?php the_permalink(); ?>">
+						<?php the_title(); ?>
+					</a>
+				</h1>
+
+				<?php the_excerpt(); ?>
+			</article>
+
+		<?php endwhile; ?>
+
+		<?php the_posts_navigation(); ?>
+
+	<?php else : ?>
+
+		<p>
+			<?php esc_html_e( 'No content was found.', 'digital-products-pro-full' ); ?>
+		</p>
+
+	<?php endif; ?>
 </main>
-<?php get_footer(); ?>
+
+<?php
+get_footer();
