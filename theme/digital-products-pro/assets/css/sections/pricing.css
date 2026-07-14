@@ -1,0 +1,25 @@
+.price-card h3 {
+    font-size: 70px;
+    margin: 5px 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+.price-card ul {
+    margin: 22px 0;
+    padding-left: 20px;
+}
+.price-card li {
+    margin: 10px 0;
+}
+.price-grid {
+    display: grid;
+    grid-template-columns: 1.08fr .92fr;
+    gap: 48px;
+    align-items: center;
+}
+.price-copy p {
+    font-size: 20px;
+    color: var(--muted);
+}

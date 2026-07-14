@@ -42,3 +42,8 @@
 .woo-wrap {
   padding-block: var(--dpp-section-space);
 }
+
+.soft {
+  background: var(--dpp-color-surface);
+  color: var(--dpp-color-text);
+}

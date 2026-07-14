@@ -1,0 +1,11 @@
+.faq-wrap {
+    max-width: 850px;
+}
+.faq-wrap details {
+    margin: 14px 0;
+}
+.faq-wrap summary {
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+}
