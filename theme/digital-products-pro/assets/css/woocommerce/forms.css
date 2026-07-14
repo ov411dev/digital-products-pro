@@ -1,0 +1,37 @@
+.woocommerce input.input-text,
+.woocommerce textarea,
+.woocommerce select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+}
+
+.woocommerce textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.woocommerce input.input-text:focus,
+.woocommerce textarea:focus,
+.woocommerce select:focus {
+  border-color: var(--dpp-color-primary-500);
+  outline: 3px solid color-mix(
+    in srgb,
+    var(--dpp-color-primary-500) 20%,
+    transparent
+  );
+  outline-offset: 1px;
+}
+
+.woocommerce label {
+  color: var(--dpp-color-text);
+  font-weight: var(--dpp-font-weight-semibold);
+}
+
+.woocommerce .required {
+  color: var(--dpp-color-error);
+}
