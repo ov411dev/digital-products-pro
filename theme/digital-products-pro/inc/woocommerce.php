@@ -157,3 +157,91 @@ add_filter(
 	10,
 	2
 );
+
+/**
+ * Customize archive button text.
+ *
+ * @param string     $text    Button text.
+ * @param WC_Product $product Product object.
+ *
+ * @return string
+ */
+function dpp_product_button_text( $text, $product ) {
+	if ( ! $product instanceof WC_Product ) {
+		return $text;
+	}
+
+	if ( $product->is_downloadable() || $product->is_virtual() ) {
+		return __( 'View Product', 'digital-products-pro-full' );
+	}
+
+	return $text;
+}
+
+add_filter(
+	'woocommerce_product_add_to_cart_text',
+	'dpp_product_button_text',
+	10,
+	2
+);
+
+/**
+ * Add a feature list below the product summary.
+ *
+ * @return void
+ */
+function dpp_single_product_highlights() {
+	global $product;
+
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+
+	$highlights = array(
+		__( 'Instant digital delivery', 'digital-products-pro-full' ),
+		__( 'Secure customer download access', 'digital-products-pro-full' ),
+		__( 'Compatible with WooCommerce accounts', 'digital-products-pro-full' ),
+	);
+
+	if ( $product->is_downloadable() ) {
+		$highlights[] = __( 'Downloadable files included', 'digital-products-pro-full' );
+	}
+
+	if ( $product->is_virtual() ) {
+		$highlights[] = __( 'No shipping required', 'digital-products-pro-full' );
+	}
+	?>
+	<ul class="dpp-product-highlights">
+		<?php foreach ( $highlights as $highlight ) : ?>
+			<li>
+				<span aria-hidden="true">✓</span>
+				<?php echo esc_html( $highlight ); ?>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+	<?php
+}
+add_action(
+	'woocommerce_single_product_summary',
+	'dpp_single_product_highlights',
+	25
+);
+
+/**
+ * Add supporting copy below the purchase controls.
+ *
+ * @return void
+ */
+function dpp_single_product_purchase_note() {
+	?>
+	<p class="dpp-purchase-note">
+		<span aria-hidden="true">🔒</span>
+		<?php esc_html_e( 'Secure checkout and immediate account access after purchase.', 'digital-products-pro-full' ); ?>
+	</p>
+	<?php
+}
+add_action(
+	'woocommerce_single_product_summary',
+	'dpp_single_product_purchase_note',
+	35
+);
