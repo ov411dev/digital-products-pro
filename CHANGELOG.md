@@ -41,3 +41,10 @@ All notable changes to this project will be documented here.
 - Secure purchase note
 - Styled product tabs and related products
 - Responsive single-product gallery and purchase area
+
+### Added
+- Premium WooCommerce single-product layout
+- Digital-product benefit list
+- Secure purchase note
+- Styled product tabs and related products
+- Responsive single-product gallery and purchase area
