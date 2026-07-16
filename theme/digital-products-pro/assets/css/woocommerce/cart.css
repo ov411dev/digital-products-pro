@@ -1,0 +1,419 @@
+/* Shared Cart page shell */
+.woocommerce-cart .dpp-commerce,
+.woocommerce-cart .entry-content {
+  min-height: 60vh;
+  padding-top: 2rem;
+}
+
+.woocommerce-cart h1,
+.wp-block-woocommerce-cart h1 {
+  color: var(--dpp-color-text);
+}
+
+/* =========================================================
+   Classic WooCommerce cart
+   ========================================================= */
+
+.woocommerce-cart .woocommerce-cart-form {
+  margin-top: var(--dpp-space-8);
+}
+
+.woocommerce-cart table.shop_table {
+  overflow: hidden;
+  border: 1px solid var(--dpp-color-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+  box-shadow: var(--dpp-shadow-sm);
+}
+
+.woocommerce-cart table.shop_table th {
+  padding: var(--dpp-space-5) var(--dpp-space-6);
+  border-bottom: 1px solid var(--dpp-color-border);
+  background: var(--dpp-color-surface);
+  color: var(--dpp-color-text-muted);
+  font-size: var(--dpp-font-size-sm);
+  font-weight: var(--dpp-font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.woocommerce-cart table.shop_table td {
+  padding: var(--dpp-space-4);
+  border-color: var(--dpp-color-border);
+  color: var(--dpp-color-text);
+  vertical-align: middle;
+}
+
+.woocommerce-cart table.shop_table .product-thumbnail img {
+  width: 5.5rem;
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface);
+}
+
+.woocommerce-cart table.shop_table .product-name a {
+  color: var(--dpp-color-text);
+  font-weight: var(--dpp-font-weight-bold);
+  text-decoration: none;
+}
+
+.woocommerce-cart table.shop_table .product-name a:hover {
+  color: var(--dpp-color-primary-600);
+}
+
+.woocommerce-cart table.shop_table .product-remove a {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(
+    in srgb,
+    var(--dpp-color-error) 10%,
+    transparent
+  );
+  color: var(--dpp-color-error);
+  text-decoration: none;
+}
+
+.woocommerce-cart .quantity .qty {
+  min-height: 2.75rem;
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+}
+
+.woocommerce-cart table.shop_table td.actions {
+  padding: var(--dpp-space-5);
+}
+
+.woocommerce-cart table.shop_table td.actions .coupon {
+  display: flex;
+  gap: var(--dpp-space-3);
+}
+
+.woocommerce-cart table.shop_table td.actions .coupon .input-text {
+  width: min(18rem, 100%);
+  min-height: 3rem;
+}
+
+.woocommerce-cart table.shop_table th:first-child {
+    padding-left: 2rem;
+}
+
+.woocommerce-cart .cart-collaterals {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(20rem, 1fr);
+  gap: var(--dpp-space-8);
+  margin-top: var(--dpp-space-8);
+}
+
+.woocommerce-cart .cart-collaterals::before,
+.woocommerce-cart .cart-collaterals::after {
+  display: none;
+}
+
+.woocommerce-cart .cart_totals {
+  width: auto;
+  float: none;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  box-shadow: var(--dpp-shadow-md);
+}
+
+.woocommerce-cart .cart_totals h2 {
+  margin-bottom: var(--dpp-space-5);
+  color: var(--dpp-color-text);
+  font-size: var(--dpp-font-size-2xl);
+}
+
+.woocommerce-cart .cart_totals table {
+  width: 100%;
+  border: 0;
+}
+
+.woocommerce-cart .cart_totals th,
+.woocommerce-cart .cart_totals td {
+  padding-block: var(--dpp-space-3);
+  border-color: var(--dpp-color-border);
+  color: var(--dpp-color-text);
+}
+
+.woocommerce-cart .wc-proceed-to-checkout {
+  padding-bottom: 0;
+}
+
+.woocommerce-cart .wc-proceed-to-checkout a.checkout-button {
+  width: 100%;
+  margin: var(--dpp-space-5) 0 0;
+  font-size: var(--dpp-font-size-lg);
+}
+
+/* Empty classic cart */
+.woocommerce-cart .cart-empty {
+  margin-top: var(--dpp-space-8);
+  padding: var(--dpp-space-8);
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+  text-align: center;
+}
+
+/* =========================================================
+   WooCommerce Cart block
+   ========================================================= */
+
+.wp-block-woocommerce-cart {
+    max-width: 90rem;
+    margin-inline: auto;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-items {
+  overflow: hidden;
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  box-shadow: var(--dpp-shadow-sm);
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-items th,
+.wp-block-woocommerce-cart .wc-block-cart-items td {
+  border-color: var(--dpp-color-border);
+  color: var(--dpp-color-text);
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-item__image img {
+  border-radius: var(--dpp-radius-md);
+}
+
+.wp-block-woocommerce-cart .wc-block-components-product-name {
+  color: var(--dpp-color-text);
+  font-weight: var(--dpp-font-weight-bold);
+  text-decoration: none;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__sidebar {
+  padding: clamp(1.5rem, 4vw, 2rem);
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+  box-shadow: var(--dpp-shadow-md);
+}
+
+.wp-block-woocommerce-cart .wc-block-components-totals-wrapper {
+  border-color: var(--dpp-color-border);
+}
+
+.wp-block-woocommerce-cart .wc-block-components-button {
+  min-height: 3.25rem;
+  border: 0;
+  border-radius: var(--dpp-radius-md);
+  background: linear-gradient(
+    135deg,
+    var(--dpp-color-primary-600),
+    var(--dpp-color-accent-500)
+  );
+  color: var(--dpp-color-white);
+  font-weight: var(--dpp-font-weight-bold);
+}
+
+.wp-block-woocommerce-cart .wc-block-components-button:hover {
+  color: var(--dpp-color-white);
+  box-shadow: var(--dpp-shadow-md);
+}
+
+.wp-block-woocommerce-cart input,
+.wp-block-woocommerce-cart select {
+  border-color: var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  color: var(--dpp-color-text);
+}
+
+@media (max-width: 52rem) {
+  .woocommerce-cart .cart-collaterals {
+    grid-template-columns: minmax(0, 1fr) 26rem;
+    gap: 1.5rem;
+  }
+
+  .woocommerce-cart table.shop_table td.actions .coupon {
+    flex-direction: column;
+  }
+
+  .woocommerce-cart table.shop_table td.actions .coupon .input-text {
+    width: 100%;
+  }
+}
+
+@media (max-width: 40rem) {
+  .woocommerce-cart table.shop_table_responsive tr td {
+    padding-block: var(--dpp-space-3);
+  }
+
+  .woocommerce-cart table.shop_table .product-thumbnail {
+    display: none;
+  }
+}
+
+.dpp-cart-assurances {
+  padding: clamp(1.5rem, 4vw, 2rem);
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface);
+  color: var(--dpp-color-text);
+}
+
+.dpp-cart-assurances h2 {
+  font-size: var(--dpp-font-size-xl);
+}
+
+.dpp-cart-assurances ul {
+  display: grid;
+  gap: var(--dpp-space-3);
+  margin: var(--dpp-space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dpp-cart-assurances li {
+  display: flex;
+  align-items: center;
+  gap: var(--dpp-space-3);
+  color: var(--dpp-color-text-muted);
+}
+
+.dpp-cart-assurances li span {
+  display: inline-grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(22 163 74 / 12%);
+  color: var(--dpp-color-success);
+  font-size: var(--dpp-font-size-xs);
+  font-weight: var(--dpp-font-weight-bold);
+}
+
+/* WooCommerce Cart block: products left, totals right */
+.wp-block-woocommerce-cart .wc-block-cart {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
+  gap: var(--dpp-space-8);
+  align-items: start;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__main {
+  min-width: 0;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__sidebar {
+  position: sticky;
+  top: 6rem;
+  align-self: start;
+}
+
+.woocommerce-cart .dpp-commerce {
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.woocommerce-cart .entry-title,
+.woocommerce-cart h1 {
+  margin-bottom: var(--dpp-space-8);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 1;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-items {
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  box-shadow: var(--dpp-shadow-sm);
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-items__row {
+  padding: var(--dpp-space-5);
+  border-bottom: 1px solid var(--dpp-color-border);
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-items__row:last-child {
+  border-bottom: 0;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart-item__image img {
+  width: 7rem;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--dpp-radius-md);
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__sidebar {
+  padding: var(--dpp-space-6);
+  border: 1px solid var(--dpp-color-border);
+  border-radius: var(--dpp-radius-md);
+  background: var(--dpp-color-surface-raised);
+  box-shadow: var(--dpp-shadow-md);
+}
+
+.wp-block-woocommerce-cart .wc-block-components-totals-item__label,
+.wp-block-woocommerce-cart .wc-block-components-totals-item__value {
+  color: var(--dpp-color-text);
+}
+
+.wp-block-woocommerce-cart .wc-block-components-button {
+  width: 100%;
+  min-height: 3.5rem;
+  margin-top: var(--dpp-space-5);
+}
+
+@media (max-width: 60rem) {
+  .wp-block-woocommerce-cart .wc-block-cart {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wp-block-woocommerce-cart .wc-block-cart__sidebar {
+    position: static;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Digital Products Pro - Override WooCommerce Cart Block layout
+   ------------------------------------------------------------------ */
+
+.wc-block-components-sidebar-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.wc-block-components-sidebar-layout .wc-block-components-main {
+    width: auto;
+    margin: 0;
+    padding-right: 0;
+    min-width: 0;
+}
+
+.wc-block-components-sidebar-layout .wc-block-components-sidebar {
+    width: auto;
+    margin: 0;
+}
+
+.wc-block-cart {
+    max-width: 90rem;
+    margin-inline: auto;
+}

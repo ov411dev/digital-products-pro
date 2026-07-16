@@ -245,3 +245,35 @@ add_action(
 	'dpp_single_product_purchase_note',
 	35
 );
+
+/**
+ * Display digital-purchase assurances on the classic Cart page.
+ *
+ * @return void
+ */
+function dpp_cart_assurances() {
+	if ( ! is_cart() ) {
+		return;
+	}
+	?>
+	<aside class="dpp-cart-assurances" aria-label="<?php esc_attr_e( 'Purchase benefits', 'digital-products-pro-full' ); ?>">
+		<h2><?php esc_html_e( 'Your purchase includes', 'digital-products-pro-full' ); ?></h2>
+
+		<ul>
+			<li>
+				<span aria-hidden="true">✓</span>
+				<?php esc_html_e( 'Secure checkout', 'digital-products-pro-full' ); ?>
+			</li>
+			<li>
+				<span aria-hidden="true">✓</span>
+				<?php esc_html_e( 'Immediate account access', 'digital-products-pro-full' ); ?>
+			</li>
+			<li>
+				<span aria-hidden="true">✓</span>
+				<?php esc_html_e( 'Protected digital downloads', 'digital-products-pro-full' ); ?>
+			</li>
+		</ul>
+	</aside>
+	<?php
+}
+add_action( 'woocommerce_before_cart_collaterals', 'dpp_cart_assurances', 10 );

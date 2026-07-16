@@ -41,3 +41,23 @@ All notable changes to this project will be documented here.
 - Secure purchase note
 - Styled product tabs and related products
 - Responsive single-product gallery and purchase area
+
+### Added
+- Premium WooCommerce single-product layout
+- Digital-product benefit list
+- Secure purchase note
+- Styled product tabs and related products
+- Responsive single-product gallery and purchase area
+
+## [0.4.0] - Unreleased
+
+### Added
+- Premium WooCommerce Cart Block layout
+- Two-column cart and order-summary experience
+- Responsive Cart Block styling
+- Theme-aware cart controls, totals, and checkout button
+
+### Fixed
+- WooCommerce Cart Block default 65/35 widths overriding the theme layout
+- Excessive spacing between cart items and cart totals
+- Cart table heading clipping near rounded corners

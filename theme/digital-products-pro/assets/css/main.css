@@ -21,6 +21,7 @@
 @import './woocommerce/base.css';
 @import './woocommerce/archive.css';
 @import './woocommerce/product.css';
+@import './woocommerce/cart.css';
 @import './woocommerce/forms.css';
 
 /* Mobile layout */
