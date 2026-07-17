@@ -61,3 +61,16 @@ All notable changes to this project will be documented here.
 - WooCommerce Cart Block default 65/35 widths overriding the theme layout
 - Excessive spacing between cart items and cart totals
 - Cart table heading clipping near rounded corners
+
+## [0.5.0] - Unreleased
+
+### Added
+- Premium responsive WooCommerce Checkout Block layout
+- Theme-aware checkout sections, fields, payment area, and order summary
+- Mobile single-column checkout flow
+- Styled checkout validation and payment notices
+
+### Fixed
+- WooCommerce Checkout Block desktop widths leaking into mobile layouts
+- Checkbox fields inheriting text-input dimensions
+- Checkout order-summary contrast in dark mode
