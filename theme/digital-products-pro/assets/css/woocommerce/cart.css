@@ -185,7 +185,8 @@
 .wp-block-woocommerce-cart .wc-block-cart-items {
   overflow: hidden;
   border: 1px solid var(--dpp-color-border);
-  border-radius: var(--dpp-radius-md);
+  /* border-radius: var(--dpp-radius-md); */
+  border-radius: 0.75rem;
   background: var(--dpp-color-surface-raised);
   box-shadow: var(--dpp-shadow-sm);
 }
@@ -416,4 +417,95 @@
 .wc-block-cart {
     max-width: 90rem;
     margin-inline: auto;
+}
+
+/* fix header padding */
+
+.wp-block-woocommerce-cart
+  .wc-block-cart-items
+  thead
+  th {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.wp-block-woocommerce-cart
+  .wc-block-cart-items
+  thead
+  th:first-child {
+  padding-left: 1.5rem;
+}
+
+.wp-block-woocommerce-cart
+  .wc-block-cart-items
+  thead
+  th:last-child {
+  padding-right: 1.5rem;
+}
+
+/* Cart table heading */
+.wp-block-woocommerce-cart
+.wc-block-cart-items
+thead
+th:first-child {
+    padding-left: 2rem;
+}
+
+/* Cart totals card */
+.wp-block-woocommerce-cart .wc-block-cart__sidebar {
+    padding: 0.9rem;
+}
+
+.wp-block-woocommerce-cart
+.wc-block-cart__sidebar
+.wc-block-components-title {
+    margin-left: -0.5rem;
+}
+
+/* Mobile Cart Block headings */
+@media (max-width: 60rem) {
+  .wp-block-woocommerce-cart .wc-block-cart__main::before {
+    display: block;
+    margin-bottom: var(--dpp-space-4);
+    color: var(--dpp-color-text);
+    content: 'Products';
+    font-size: var(--dpp-font-size-xl);
+    font-weight: var(--dpp-font-weight-bold);
+  }
+
+  .wp-block-woocommerce-cart .wc-block-cart__sidebar::before {
+    display: block;
+    margin-bottom: var(--dpp-space-4);
+    color: var(--dpp-color-text);
+    content: 'Cart totals';
+    font-size: var(--dpp-font-size-xl);
+    font-weight: var(--dpp-font-weight-bold);
+  }
+}
+
+@media (max-width: 60rem) {
+  .wp-block-woocommerce-cart .wc-block-cart__main::before {
+    display: block;
+    margin-bottom: var(--dpp-space-4);
+    color: var(--dpp-color-text);
+    content: 'Products';
+    font-size: var(--dpp-font-size-xl);
+    font-weight: var(--dpp-font-weight-bold);
+  }
+
+  .wp-block-woocommerce-cart
+    .wc-block-cart__sidebar
+    .wc-block-components-title {
+    display: block;
+    margin: 0 0 var(--dpp-space-5);
+    color: var(--dpp-color-text);
+    font-size: var(--dpp-font-size-xl);
+    font-weight: var(--dpp-font-weight-bold);
+  }
+}
+
+@media (max-width: 60rem) {
+  .wp-block-woocommerce-cart .wc-block-cart-items thead {
+    display: none;
+  }
 }
