@@ -74,3 +74,7 @@ All notable changes to this project will be documented here.
 - WooCommerce Checkout Block desktop widths leaking into mobile layouts
 - Checkbox fields inheriting text-input dimensions
 - Checkout order-summary contrast in dark mode
+
+### Updated
+
+- Updated Woocommerce downloads page
