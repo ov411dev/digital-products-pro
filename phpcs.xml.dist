@@ -16,4 +16,13 @@
   <rule ref="WordPress-Docs"/>
   <config name="minimum_supported_wp_version" value="6.0"/>
   <config name="testVersion" value="8.0-"/>
+  <rule ref="WordPress.WP.Capabilities">
+    <properties>
+      <property
+        name="custom_capabilities"
+        type="array"
+        value="manage_woocommerce"
+      />
+    </properties>
+</rule>
 </ruleset>

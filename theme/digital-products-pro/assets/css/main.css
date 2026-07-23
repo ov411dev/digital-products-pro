@@ -26,6 +26,7 @@
 @import './woocommerce/order-confirmation.css';
 @import './woocommerce/account.css';
 @import './woocommerce/forms.css';
+@import './sections/creator-dashboard.css';
 
 /* Mobile layout */
 @media (max-width: 52rem) {
