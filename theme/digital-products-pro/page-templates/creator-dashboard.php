@@ -21,7 +21,8 @@ if ( ! current_user_can( 'manage_woocommerce' ) ) {
 
 get_header();
 
-$dpp_creator_user = wp_get_current_user();
+$dpp_creator_user   = wp_get_current_user();
+$dpp_dashboard_data = dpp_get_creator_dashboard_data();
 ?>
 
 <main id="primary" class="dpp-creator-dashboard">
@@ -58,29 +59,65 @@ $dpp_creator_user = wp_get_current_user();
 			</a>
 		</header>
 
-		<section class="dpp-creator-metrics" aria-label="<?php esc_attr_e( 'Business summary', 'digital-products-pro-full' ); ?>">
+		<section
+			class="dpp-creator-metrics"
+			aria-label="<?php esc_attr_e( 'Business summary', 'digital-products-pro-full' ); ?>">
 			<article class="dpp-creator-metric">
-				<span><?php esc_html_e( 'Products', 'digital-products-pro-full' ); ?></span>
-				<strong>—</strong>
-				<small><?php esc_html_e( 'Live data coming next', 'digital-products-pro-full' ); ?></small>
+				<span>
+					<?php esc_html_e( 'Products', 'digital-products-pro-full' ); ?>
+				</span>
+
+				<strong>
+					<?php echo esc_html( number_format_i18n( $dpp_dashboard_data['product_count'] ) ); ?>
+				</strong>
+
+				<small>
+					<?php esc_html_e( 'Published products', 'digital-products-pro-full' ); ?>
+				</small>
 			</article>
 
 			<article class="dpp-creator-metric">
-				<span><?php esc_html_e( 'Orders', 'digital-products-pro-full' ); ?></span>
-				<strong>—</strong>
-				<small><?php esc_html_e( 'Live data coming next', 'digital-products-pro-full' ); ?></small>
+				<span>
+					<?php esc_html_e( 'Orders', 'digital-products-pro-full' ); ?>
+				</span>
+
+				<strong>
+					<?php echo esc_html( number_format_i18n( $dpp_dashboard_data['order_count'] ) ); ?>
+				</strong>
+
+				<small>
+					<?php esc_html_e( 'Processing and completed', 'digital-products-pro-full' ); ?>
+				</small>
 			</article>
 
 			<article class="dpp-creator-metric">
-				<span><?php esc_html_e( 'Revenue', 'digital-products-pro-full' ); ?></span>
-				<strong>—</strong>
-				<small><?php esc_html_e( 'Live data coming next', 'digital-products-pro-full' ); ?></small>
+				<span>
+					<?php esc_html_e( 'Revenue', 'digital-products-pro-full' ); ?>
+				</span>
+
+				<strong>
+					<?php
+					echo wp_kses_post(
+						wc_price( $dpp_dashboard_data['total_revenue'] )
+					);
+					?>
+				</strong>
+
+				<small>
+					<?php esc_html_e( 'Paid order total', 'digital-products-pro-full' ); ?>
+				</small>
 			</article>
 
 			<article class="dpp-creator-metric">
-				<span><?php esc_html_e( 'Automations', 'digital-products-pro-full' ); ?></span>
+				<span>
+					<?php esc_html_e( 'Automations', 'digital-products-pro-full' ); ?>
+				</span>
+
 				<strong>0</strong>
-				<small><?php esc_html_e( 'n8n integration planned', 'digital-products-pro-full' ); ?></small>
+
+				<small>
+					<?php esc_html_e( 'n8n integration coming next', 'digital-products-pro-full' ); ?>
+				</small>
 			</article>
 		</section>
 
@@ -100,28 +137,114 @@ $dpp_creator_user = wp_get_current_user();
 					</a>
 				</header>
 
-				<div class="dpp-creator-panel__placeholder">
-					<p>
-						<?php esc_html_e( 'Your latest products will appear here.', 'digital-products-pro-full' ); ?>
-					</p>
-				</div>
+				<?php if ( ! empty( $dpp_dashboard_data['recent_products'] ) ) : ?>
+					<ul class="dpp-creator-list">
+						<?php foreach ( $dpp_dashboard_data['recent_products'] as $product ) : ?>
+							<li>
+								<div class="dpp-creator-list__main">
+									<?php
+									echo wp_kses_post(
+										$product->get_image(
+											'woocommerce_thumbnail',
+											array(
+												'class'   => 'dpp-creator-list__image',
+												'loading' => 'lazy',
+											)
+										)
+									);
+									?>
+
+									<div>
+										<strong>
+											<?php echo esc_html( $product->get_name() ); ?>
+										</strong>
+
+										<small>
+											<?php
+											echo esc_html(
+												get_post_status_object(
+													$product->get_status()
+												)->label
+											);
+											?>
+										</small>
+									</div>
+								</div>
+
+								<a
+									href="<?php echo esc_url( get_edit_post_link( $product->get_id() ) ); ?>"
+								>
+									<?php esc_html_e( 'Edit', 'digital-products-pro-full' ); ?>
+								</a>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php else : ?>
+					<div class="dpp-creator-panel__placeholder">
+						<p>
+							<?php esc_html_e( 'No products created yet.', 'digital-products-pro-full' ); ?>
+						</p>
+					</div>
+				<?php endif; ?>
 			</section>
 
 			<section class="dpp-creator-panel">
 				<header class="dpp-creator-panel__header">
 					<div>
 						<p class="dpp-eyebrow">
-							<?php esc_html_e( 'Operations', 'digital-products-pro-full' ); ?>
+							<?php esc_html_e( 'Sales', 'digital-products-pro-full' ); ?>
 						</p>
 
-						<h2><?php esc_html_e( 'Automation status', 'digital-products-pro-full' ); ?></h2>
+						<h2>
+							<?php esc_html_e( 'Recent orders', 'digital-products-pro-full' ); ?>
+						</h2>
 					</div>
 				</header>
 
 				<div class="dpp-creator-panel__placeholder">
-					<p>
-						<?php esc_html_e( 'Connect n8n workflows to display their status here.', 'digital-products-pro-full' ); ?>
-					</p>
+					<?php if ( ! empty( $dpp_dashboard_data['recent_orders'] ) ) : ?>
+						<ul class="dpp-creator-list">
+							<?php foreach ( $dpp_dashboard_data['recent_orders'] as $dpp_order ) : ?>
+								<li>
+									<div>
+										<strong>
+											<?php
+											printf(
+												/* translators: %s: order number. */
+												esc_html__( 'Order #%s', 'digital-products-pro-full' ),
+												esc_html( $dpp_order->get_order_number() )
+											);
+											?>
+										</strong>
+
+										<small>
+											<?php
+											echo esc_html(
+												wc_get_order_status_name( $dpp_order->get_status() )
+											);
+											?>
+										</small>
+									</div>
+
+									<div class="dpp-creator-list__order-total">
+										<strong>
+											<?php echo wp_kses_post( $dpp_order->get_formatted_order_total() ); ?>
+										</strong>
+
+										<a href="<?php echo esc_url( $dpp_order->get_edit_order_url() ); ?>">
+											<?php esc_html_e( 'View', 'digital-products-pro-full' ); ?>
+										</a>
+									</div>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php else : ?>
+						<div class="dpp-creator-panel__placeholder">
+							<p>
+								<?php esc_html_e( 'No paid orders yet.', 'digital-products-pro-full' ); ?>
+							</p>
+						</div>
+					<?php endif; ?>
 				</div>
 			</section>
 		</div>

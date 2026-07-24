@@ -18,11 +18,9 @@
   <config name="testVersion" value="8.0-"/>
   <rule ref="WordPress.WP.Capabilities">
     <properties>
-      <property
-        name="custom_capabilities"
-        type="array"
-        value="manage_woocommerce"
-      />
+      <property name="custom_capabilities" type="array">
+        <element value="manage_woocommerce"/>
+      </property>
     </properties>
-</rule>
+  </rule>
 </ruleset>
