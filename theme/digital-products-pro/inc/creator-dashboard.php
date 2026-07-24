@@ -73,3 +73,32 @@ function dpp_get_creator_dashboard_data() {
 		'recent_orders'   => $recent_orders,
 	);
 }
+
+/**
+ * Return Automation Center data.
+ *
+ * Plugins may provide live n8n information through the
+ * dpp_automation_center_data filter.
+ *
+ * @return array<string, mixed>
+ */
+function dpp_get_automation_center_data() {
+	$automation_data = array(
+		'connection_status' => 'not_connected',
+		'active_workflows'  => 0,
+		'failed_executions' => 0,
+		'last_sync'         => '',
+		'workflows'         => array(),
+		'n8n_url'           => '',
+	);
+
+	/**
+	 * Filter Automation Center data.
+	 *
+	 * @param array<string, mixed> $automation_data Automation data.
+	 */
+	return apply_filters(
+		'dpp_automation_center_data',
+		$automation_data
+	);
+}

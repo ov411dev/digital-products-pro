@@ -23,6 +23,20 @@ get_header();
 
 $dpp_creator_user   = wp_get_current_user();
 $dpp_dashboard_data = dpp_get_creator_dashboard_data();
+
+$dpp_automation_data = dpp_get_automation_center_data();
+
+$dpp_connection_labels = array(
+	'connected'     => __( 'Connected', 'digital-products-pro-full' ),
+	'error'         => __( 'Connection error', 'digital-products-pro-full' ),
+	'not_connected' => __( 'Not connected', 'digital-products-pro-full' ),
+);
+
+$dpp_connection_status = isset(
+	$dpp_connection_labels[ $dpp_automation_data['connection_status'] ]
+)
+	? $dpp_connection_labels[ $dpp_automation_data['connection_status'] ]
+	: $dpp_connection_labels['not_connected'];
 ?>
 
 <main id="primary" class="dpp-creator-dashboard">
@@ -113,10 +127,18 @@ $dpp_dashboard_data = dpp_get_creator_dashboard_data();
 					<?php esc_html_e( 'Automations', 'digital-products-pro-full' ); ?>
 				</span>
 
-				<strong>0</strong>
+				<strong>
+					<?php
+					echo esc_html(
+						number_format_i18n(
+							absint( $dpp_automation_data['active_workflows'] )
+						)
+					);
+					?>
+				</strong>
 
 				<small>
-					<?php esc_html_e( 'n8n integration coming next', 'digital-products-pro-full' ); ?>
+					<?php echo esc_html( $dpp_connection_status ); ?>
 				</small>
 			</article>
 		</section>
@@ -248,6 +270,139 @@ $dpp_dashboard_data = dpp_get_creator_dashboard_data();
 				</div>
 			</section>
 		</div>
+
+		<section class="dpp-creator-panel dpp-automation-center">
+			<header class="dpp-creator-panel__header">
+				<div>
+					<p class="dpp-eyebrow">
+						<?php esc_html_e( 'Automation', 'digital-products-pro-full' ); ?>
+					</p>
+
+					<h2>
+						<?php esc_html_e( 'Automation Center', 'digital-products-pro-full' ); ?>
+					</h2>
+				</div>
+
+				<span
+					class="dpp-automation-status dpp-automation-status--
+					<?php
+					echo esc_attr( $dpp_automation_data['connection_status'] );
+					?>
+					"
+				>
+					<span aria-hidden="true"></span>
+					<?php echo esc_html( $dpp_connection_status ); ?>
+				</span>
+			</header>
+
+			<div class="dpp-automation-summary">
+				<article>
+					<span>
+						<?php esc_html_e( 'Active workflows', 'digital-products-pro-full' ); ?>
+					</span>
+
+					<strong>
+						<?php
+						echo esc_html(
+							number_format_i18n(
+								absint( $dpp_automation_data['active_workflows'] )
+							)
+						);
+						?>
+					</strong>
+				</article>
+
+				<article>
+					<span>
+						<?php esc_html_e( 'Failed executions', 'digital-products-pro-full' ); ?>
+					</span>
+
+					<strong>
+						<?php
+						echo esc_html(
+							number_format_i18n(
+								absint( $dpp_automation_data['failed_executions'] )
+							)
+						);
+						?>
+					</strong>
+				</article>
+
+				<article>
+					<span>
+						<?php esc_html_e( 'Last synchronization', 'digital-products-pro-full' ); ?>
+					</span>
+
+					<strong class="dpp-automation-summary__text">
+						<?php
+						echo $dpp_automation_data['last_sync']
+							? esc_html( $dpp_automation_data['last_sync'] )
+							: esc_html__( 'Not synchronized', 'digital-products-pro-full' );
+						?>
+					</strong>
+				</article>
+			</div>
+
+			<?php if ( ! empty( $dpp_automation_data['workflows'] ) ) : ?>
+				<ul class="dpp-automation-workflows">
+					<?php foreach ( $dpp_automation_data['workflows'] as $dpp_workflow ) : ?>
+						<li>
+							<div>
+								<strong>
+									<?php echo esc_html( $dpp_workflow['name'] ); ?>
+								</strong>
+
+								<small>
+									<?php echo esc_html( $dpp_workflow['description'] ); ?>
+								</small>
+							</div>
+
+							<span
+								class="dpp-automation-workflow-state dpp-automation-workflow-state--
+								<?php
+								echo esc_attr( $dpp_workflow['status'] );
+								?>
+								"
+							>
+								<?php echo esc_html( $dpp_workflow['status_label'] ); ?>
+							</span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php else : ?>
+				<div class="dpp-automation-empty">
+					<div>
+						<h3>
+							<?php esc_html_e( 'Connect your automation engine', 'digital-products-pro-full' ); ?>
+						</h3>
+
+						<p>
+							<?php
+							esc_html_e(
+								'Connect n8n to monitor workflows, executions, and product automations from this dashboard.',
+								'digital-products-pro-full'
+							);
+							?>
+						</p>
+					</div>
+
+					<?php if ( ! empty( $dpp_automation_data['n8n_url'] ) ) : ?>
+						<a
+							class="dpp-button dpp-button--primary"
+							href="<?php echo esc_url( $dpp_automation_data['n8n_url'] ); ?>"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<?php esc_html_e( 'Open n8n', 'digital-products-pro-full' ); ?>
+						</a>
+					<?php else : ?>
+						<span class="dpp-button dpp-button--disabled">
+							<?php esc_html_e( 'n8n not configured', 'digital-products-pro-full' ); ?>
+						</span>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+		</section>
 
 		<section class="dpp-creator-panel dpp-creator-actions">
 			<header class="dpp-creator-panel__header">
