@@ -18,3 +18,4 @@ require_once DPP_DIR . '/inc/helpers.php';
 require_once DPP_DIR . '/inc/content.php';
 require_once DPP_DIR . '/inc/woocommerce.php';
 require_once DPP_DIR . '/inc/workflow.php';
+require_once DPP_DIR . '/inc/creator-dashboard.php';
