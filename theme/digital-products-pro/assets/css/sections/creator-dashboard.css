@@ -482,6 +482,12 @@
   color: #637593;
 }
 
+.dpp-automation-status--configured {
+  border-color: rgb(59 130 246 / 28%);
+  background: rgb(59 130 246 / 13%);
+  color: #93c5fd;
+}
+
 .dpp-automation-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

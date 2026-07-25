@@ -28,6 +28,7 @@ $dpp_automation_data = dpp_get_automation_center_data();
 
 $dpp_connection_labels = array(
 	'connected'     => __( 'Connected', 'digital-products-pro-full' ),
+	'configured'    => __( 'Configured', 'digital-products-pro-full' ),
 	'error'         => __( 'Connection error', 'digital-products-pro-full' ),
 	'not_connected' => __( 'Not connected', 'digital-products-pro-full' ),
 );
