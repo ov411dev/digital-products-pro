@@ -50,6 +50,8 @@ final class DPPA_Plugin {
 	private function load_dependencies() {
 		require_once DPPA_DIR . 'includes/class-dppa-settings.php';
 		require_once DPPA_DIR . 'includes/class-dppa-api-client.php';
+		require_once DPPA_DIR . 'includes/class-dppa-workflows.php';
+		require_once DPPA_DIR . 'includes/class-dppa-executions.php';
 		require_once DPPA_DIR . 'includes/class-dppa-dashboard-provider.php';
 	}
 

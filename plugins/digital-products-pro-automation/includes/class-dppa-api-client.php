@@ -89,13 +89,32 @@ final class DPPA_API_Client {
 		);
 
 		if ( $status_code < 200 || $status_code >= 300 ) {
+			$error_code    = 'dppa_n8n_request_failed';
+			$error_message = sprintf(
+				/* translators: %d: HTTP status code. */
+				__( 'The n8n API returned HTTP %d.', 'digital-products-pro-automation' ),
+				$status_code
+			);
+
+			if ( 401 === $status_code || 403 === $status_code ) {
+				$error_code    = 'dppa_n8n_authentication_failed';
+				$error_message = __(
+					'Authentication failed. Check the n8n API key and its permissions.',
+					'digital-products-pro-automation'
+				);
+			}
+
+			if ( 404 === $status_code ) {
+				$error_code    = 'dppa_n8n_endpoint_not_found';
+				$error_message = __(
+					'The n8n API endpoint was not found. Check the saved n8n URL.',
+					'digital-products-pro-automation'
+				);
+			}
+
 			return new WP_Error(
-				'dppa_n8n_request_failed',
-				sprintf(
-					/* translators: %d: HTTP status code. */
-					__( 'The n8n API returned HTTP %d.', 'digital-products-pro-automation' ),
-					$status_code
-				),
+				$error_code,
+				$error_message,
 				array(
 					'status' => $status_code,
 					'body'   => is_array( $body ) ? $body : array(),
@@ -104,5 +123,14 @@ final class DPPA_API_Client {
 		}
 
 		return is_array( $body ) ? $body : array();
+	}
+
+	/**
+	 * Return the configured n8n base URL.
+	 *
+	 * @return string
+	 */
+	public function get_base_url() {
+		return $this->base_url;
 	}
 }
