@@ -3,6 +3,7 @@
   <description>WordPress coding standards for Digital Products Pro.</description>
   <file>theme/digital-products-pro</file>
   <file>plugin/digital-products-pro</file>
+  <file>plugins/digital-products-pro-automation</file>
   <exclude-pattern>*/vendor/*</exclude-pattern>
   <exclude-pattern>*/node_modules/*</exclude-pattern>
   <exclude-pattern>*/dist/*</exclude-pattern>

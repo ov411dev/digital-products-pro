@@ -32,6 +32,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ../theme/digital-products-pro:/var/www/html/wp-content/themes/digital-products-pro
+      - ../plugins/digital-products-pro-automation:/var/www/html/wp-content/plugins/digital-products-pro-automation
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
