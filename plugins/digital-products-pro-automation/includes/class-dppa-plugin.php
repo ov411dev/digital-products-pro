@@ -56,6 +56,7 @@ final class DPPA_Plugin {
 		require_once DPPA_DIR . 'includes/class-dppa-workflow-table.php';
 		require_once DPPA_DIR . 'includes/class-dppa-workflow-runner.php';
 		require_once DPPA_DIR . 'includes/class-dppa-workflow-admin.php';
+		require_once DPPA_DIR . 'includes/class-dppa-workflow-context.php';
 	}
 
 	/**

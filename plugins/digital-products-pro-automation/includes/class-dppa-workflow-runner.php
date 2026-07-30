@@ -66,8 +66,7 @@ final class DPPA_Workflow_Runner {
 
 		$request_body = array(
 			'workflow_id' => $workflow_id,
-			'source'      => 'wordpress',
-			'user_id'     => get_current_user_id(),
+			'context'     => DPPA_Workflow_Context::build(),
 		);
 
 		$response = wp_remote_post(
