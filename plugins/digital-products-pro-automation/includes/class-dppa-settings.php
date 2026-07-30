@@ -256,6 +256,28 @@ final class DPPA_Settings {
 			self::PAGE_SLUG,
 			'dppa_connection_section'
 		);
+
+		add_settings_field(
+			'dppa_runner_webhook_url',
+			__(
+				'Runner Webhook URL',
+				'digital-products-pro-automation'
+			),
+			array( __CLASS__, 'render_runner_webhook_url_field' ),
+			self::PAGE_SLUG,
+			'dppa_connection_section'
+		);
+
+		add_settings_field(
+			'dppa_runner_secret',
+			__(
+				'Runner Secret',
+				'digital-products-pro-automation'
+			),
+			array( __CLASS__, 'render_runner_secret_field' ),
+			self::PAGE_SLUG,
+			'dppa_connection_section'
+		);
 	}
 
 	/**
@@ -265,8 +287,10 @@ final class DPPA_Settings {
 	 */
 	public static function get_defaults() {
 		return array(
-			'n8n_url' => '',
-			'api_key' => '',
+			'n8n_url'            => '',
+			'api_key'            => '',
+			'runner_webhook_url' => '',
+			'runner_secret'      => '',
 		);
 	}
 
@@ -285,47 +309,92 @@ final class DPPA_Settings {
 	}
 
 	/**
-	 * Sanitize settings.
-	 *
-	 * Preserve the existing API key when the password field is left blank.
+	 * Sanitize automation settings.
 	 *
 	 * @param mixed $input Submitted settings.
 	 * @return array<string, string>
 	 */
 	public static function sanitize_settings( $input ) {
 		$current = self::get_settings();
-		$input   = is_array( $input ) ? $input : array();
+		$output  = array(
+			'n8n_url'            => '',
+			'api_key'            => $current['api_key'],
+			'runner_webhook_url' => '',
+			'runner_secret'      => $current['runner_secret'],
+		);
 
-		$n8n_url = isset( $input['n8n_url'] )
-			? untrailingslashit( esc_url_raw( $input['n8n_url'] ) )
-			: '';
-
-		$api_key = isset( $input['api_key'] )
-			? sanitize_text_field( wp_unslash( $input['api_key'] ) )
-			: '';
-
-		if ( '' === $api_key ) {
-			$api_key = $current['api_key'];
+		if ( ! is_array( $input ) ) {
+			return $output;
 		}
 
-		$credentials_changed =
-			$n8n_url !== $current['n8n_url'] ||
-			$api_key !== $current['api_key'];
-
-		if ( $credentials_changed ) {
-			self::update_connection_status(
-				'not_connected',
-				__(
-					'Connection settings changed. Test the connection again.',
-					'digital-products-pro-automation'
+		if ( isset( $input['n8n_url'] ) ) {
+			$output['n8n_url'] = untrailingslashit(
+				esc_url_raw(
+					wp_unslash( $input['n8n_url'] )
 				)
 			);
 		}
 
-		return array(
-			'n8n_url' => $n8n_url,
-			'api_key' => $api_key,
-		);
+		if ( isset( $input['api_key'] ) ) {
+			$api_key = trim(
+				(string) wp_unslash( $input['api_key'] )
+			);
+
+			if ( '' !== $api_key ) {
+				$output['api_key'] = sanitize_text_field( $api_key );
+			}
+		}
+
+		if ( isset( $input['runner_webhook_url'] ) ) {
+			$output['runner_webhook_url'] = esc_url_raw(
+				wp_unslash( $input['runner_webhook_url'] )
+			);
+		}
+
+		if ( isset( $input['runner_secret'] ) ) {
+			$runner_secret = trim(
+				(string) wp_unslash( $input['runner_secret'] )
+			);
+
+			if ( '' !== $runner_secret ) {
+				$output['runner_secret'] = sanitize_text_field(
+					$runner_secret
+				);
+			}
+		}
+
+		/*
+		* Connection-related values changed, so force fresh checks and data.
+		*/
+		delete_transient( 'dppa_dashboard_stats' );
+
+		return $output;
+	}
+
+	/**
+	 * Get the runner webhook URL.
+	 *
+	 * @return string
+	 */
+	public static function get_runner_webhook_url() {
+		$settings = self::get_settings();
+
+		return isset( $settings['runner_webhook_url'] )
+			? esc_url_raw( $settings['runner_webhook_url'] )
+			: '';
+	}
+
+	/**
+	 * Get the runner secret.
+	 *
+	 * @return string
+	 */
+	public static function get_runner_secret() {
+		$settings = self::get_settings();
+
+		return isset( $settings['runner_secret'] )
+			? (string) $settings['runner_secret']
+			: '';
 	}
 
 	/**
@@ -515,6 +584,76 @@ final class DPPA_Settings {
 				<?php endif; ?>
 			</p>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Render the runner webhook URL field.
+	 *
+	 * @return void
+	 */
+	public static function render_runner_webhook_url_field() {
+		$settings = self::get_settings();
+		$value    = $settings['runner_webhook_url'];
+		?>
+		<input
+			type="url"
+			id="dppa_runner_webhook_url"
+			name="dppa_settings[runner_webhook_url]"
+			value="<?php echo esc_attr( $value ); ?>"
+			class="regular-text"
+			placeholder="https://n8n.example.com/webhook/dppa-run-workflow"
+			autocomplete="url"
+		>
+
+		<p class="description">
+			<?php
+			esc_html_e(
+				'Enter the production webhook URL for the active DPPA Runner Gateway workflow.',
+				'digital-products-pro-automation'
+			);
+			?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render the runner secret field.
+	 *
+	 * @return void
+	 */
+	public static function render_runner_secret_field() {
+		$settings    = self::get_settings();
+		$has_secret  = '' !== $settings['runner_secret'];
+		$placeholder = $has_secret
+			? __( 'Secret already saved', 'digital-products-pro-automation' )
+			: __( 'Enter runner secret', 'digital-products-pro-automation' );
+		?>
+		<input
+			type="password"
+			id="dppa_runner_secret"
+			name="dppa_settings[runner_secret]"
+			value=""
+			class="regular-text"
+			placeholder="<?php echo esc_attr( $placeholder ); ?>"
+			autocomplete="new-password"
+		>
+
+		<p class="description">
+			<?php
+			if ( $has_secret ) {
+				esc_html_e(
+					'A runner secret is saved. Leave this field blank to keep it unchanged.',
+					'digital-products-pro-automation'
+				);
+			} else {
+				esc_html_e(
+					'Enter the same secret configured in the n8n Header Auth credential.',
+					'digital-products-pro-automation'
+				);
+			}
+			?>
+		</p>
 		<?php
 	}
 }
