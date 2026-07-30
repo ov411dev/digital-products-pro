@@ -78,3 +78,13 @@ All notable changes to this project will be documented here.
 ### Updated
 
 - Updated Woocommerce downloads page
+
+### created n8n interactive functionality
+
+- Runner Webhook URL and Runner Secret settings
+- DPPA_Workflow_Runner
+- admin-post.php handler
+- nonce and capability validation
+- n8n response handling
+- success/error admin notices
+- prevention of running the gateway as a sub-workflow
