@@ -1,0 +1,522 @@
+<?php
+/**
+ * Workflow list table.
+ *
+ * @package DigitalProductsProAutomation
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+
+/**
+ * Display n8n workflows in a WordPress list table.
+ */
+final class DPPA_Workflow_Table extends WP_List_Table {
+
+	/**
+	 * Workflow service.
+	 *
+	 * @var DPPA_Workflows
+	 */
+	private $workflows;
+
+	/**
+	 * N8n base URL.
+	 *
+	 * @var string
+	 */
+	private $n8n_url;
+
+	/**
+	 * Initialize the workflow table.
+	 */
+	public function __construct() {
+		parent::__construct(
+			array(
+				'singular' => 'dppa_workflow',
+				'plural'   => 'dppa_workflows',
+				'ajax'     => false,
+			)
+		);
+
+		$this->workflows = new DPPA_Workflows();
+
+		$settings      = DPPA_Settings::get_settings();
+		$this->n8n_url = isset( $settings['n8n_url'] )
+			? untrailingslashit( $settings['n8n_url'] )
+			: '';
+	}
+
+	/**
+	 * Return table columns.
+	 *
+	 * @return array<string, string>
+	 */
+	public function get_columns() {
+		return array(
+			'status'     => __( 'Status', 'digital-products-pro-automation' ),
+			'name'       => __( 'Workflow', 'digital-products-pro-automation' ),
+			'id'         => __( 'ID', 'digital-products-pro-automation' ),
+			'tags'       => __( 'Tags', 'digital-products-pro-automation' ),
+			'updated_at' => __( 'Updated', 'digital-products-pro-automation' ),
+		);
+	}
+
+	/**
+	 * Prepare table items.
+	 *
+	 * @return void
+	 */
+	public function prepare_items() {
+		$columns  = $this->get_columns();
+		$hidden   = array();
+		$sortable = $this->get_sortable_columns();
+
+		$this->_column_headers = array(
+			$columns,
+			$hidden,
+			$sortable,
+		);
+
+		$response = $this->workflows->get_all( 250 );
+
+		if ( is_wp_error( $response ) ) {
+			$this->items = array();
+
+			add_settings_error(
+				'dppa_workflows',
+				'dppa_workflows_api_error',
+				$response->get_error_message(),
+				'error'
+			);
+
+			return;
+		}
+
+		$items = $this->workflows->extract_items( $response );
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$search = isset( $_REQUEST['s'] )
+			? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) )
+			: '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		if ( '' !== $search ) {
+			$items = array_filter(
+				$items,
+				static function ( $item ) use ( $search ) {
+					if ( ! is_array( $item ) ) {
+						return false;
+					}
+
+					$name = isset( $item['name'] )
+						? (string) $item['name']
+						: '';
+
+					return false !== stripos( $name, $search );
+				}
+			);
+		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$status_filter = isset( $_REQUEST['workflow_status'] )
+			? sanitize_key( wp_unslash( $_REQUEST['workflow_status'] ) )
+			: '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		if ( in_array( $status_filter, array( 'active', 'disabled' ), true ) ) {
+			$items = array_filter(
+				$items,
+				static function ( $item ) use ( $status_filter ) {
+					if ( ! is_array( $item ) ) {
+						return false;
+					}
+
+					$is_active = ! empty( $item['active'] );
+
+					if ( 'active' === $status_filter ) {
+						return $is_active;
+					}
+
+					return ! $is_active;
+				}
+			);
+		}
+
+		$items = array_values( $items );
+
+		$this->sort_items( $items );
+
+		$per_page     = 20;
+		$current_page = $this->get_pagenum();
+		$total_items  = count( $items );
+
+		$this->items = array_slice(
+			$items,
+			( $current_page - 1 ) * $per_page,
+			$per_page
+		);
+
+		$this->set_pagination_args(
+			array(
+				'total_items' => $total_items,
+				'per_page'    => $per_page,
+				'total_pages' => (int) ceil( $total_items / $per_page ),
+			)
+		);
+	}
+
+	/**
+	 * Display a fallback value for unknown columns.
+	 *
+	 * @param array<string, mixed> $item        Workflow record.
+	 * @param string               $column_name Column name.
+	 * @return string
+	 */
+	public function column_default( $item, $column_name ) {
+		switch ( $column_name ) {
+			case 'id':
+				return isset( $item['id'] )
+					? esc_html( (string) $item['id'] )
+					: '—';
+
+			case 'updated_at':
+				return $this->format_date(
+					isset( $item['updatedAt'] )
+						? (string) $item['updatedAt']
+						: ''
+				);
+
+			default:
+				return '—';
+		}
+	}
+
+	/**
+	 * Display the workflow status.
+	 *
+	 * @param array<string, mixed> $item Workflow record.
+	 * @return string
+	 */
+	public function column_status( $item ) {
+		$is_active = ! empty( $item['active'] );
+
+		$class = $is_active
+			? 'dppa-status-badge--active'
+			: 'dppa-status-badge--disabled';
+
+		$label = $is_active
+			? __( 'Active', 'digital-products-pro-automation' )
+			: __( 'Disabled', 'digital-products-pro-automation' );
+
+		return sprintf(
+			'<span class="dppa-status-badge %1$s">
+                <span class="dppa-status-badge__dot" aria-hidden="true"></span>
+                <span class="dppa-status-badge__label">%2$s</span>
+            </span>',
+			esc_attr( $class ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * Display the workflow name and row actions.
+	 *
+	 * @param array<string, mixed> $item Workflow record.
+	 * @return string
+	 */
+	public function column_name( $item ) {
+		$name = isset( $item['name'] )
+			? (string) $item['name']
+			: __( 'Untitled workflow', 'digital-products-pro-automation' );
+
+		$workflow_id = isset( $item['id'] )
+			? (string) $item['id']
+			: '';
+
+		$actions = array();
+
+		/*
+		* Open workflow in n8n.
+		*/
+		if ( '' !== $this->n8n_url && '' !== $workflow_id ) {
+			$workflow_url = sprintf(
+				'%1$s/workflow/%2$s',
+				$this->n8n_url,
+				rawurlencode( $workflow_id )
+			);
+
+			$actions['open'] = sprintf(
+				'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
+				esc_url( $workflow_url ),
+				esc_html__(
+					'Open in n8n',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		/*
+		* Run workflow through the configured runner webhook.
+		*/
+		$runner_workflow_id = 'Lx8GCAUid8OBQYp5';
+		if (
+			'' !== $workflow_id &&
+			$runner_workflow_id !== $workflow_id &&
+			'' !== DPPA_Settings::get_runner_webhook_url()
+		) {
+			$run_url = wp_nonce_url(
+				add_query_arg(
+					array(
+						'action'      => 'dppa_run_workflow',
+						'workflow_id' => $workflow_id,
+					),
+					admin_url( 'admin-post.php' )
+				),
+				'dppa_run_workflow_' . $workflow_id
+			);
+
+			$actions['run'] = sprintf(
+				'<a href="%1$s" class="dppa-run-workflow">%2$s</a>',
+				esc_url( $run_url ),
+				esc_html__(
+					'Run',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		return sprintf(
+			'<strong>%1$s</strong>%2$s',
+			esc_html( $name ),
+			$this->row_actions( $actions )
+		);
+	}
+
+	/**
+	 * Display workflow tags.
+	 *
+	 * @param array<string, mixed> $item Workflow record.
+	 * @return string
+	 */
+	public function column_tags( $item ) {
+		if ( empty( $item['tags'] ) || ! is_array( $item['tags'] ) ) {
+			return '—';
+		}
+
+		$tags = array();
+
+		foreach ( $item['tags'] as $tag ) {
+			if ( is_array( $tag ) && ! empty( $tag['name'] ) ) {
+				$tags[] = (string) $tag['name'];
+			} elseif ( is_string( $tag ) ) {
+				$tags[] = $tag;
+			}
+		}
+
+		if ( empty( $tags ) ) {
+			return '—';
+		}
+
+		return esc_html( implode( ', ', $tags ) );
+	}
+
+	/**
+	 * Message shown when no workflows exist.
+	 *
+	 * @return void
+	 */
+	public function no_items() {
+		esc_html_e(
+			'No workflows were found.',
+			'digital-products-pro-automation'
+		);
+	}
+
+	/**
+	 * Format an n8n date.
+	 *
+	 * @param string $date Date value.
+	 * @return string
+	 */
+	private function format_date( $date ) {
+		if ( '' === $date ) {
+			return '—';
+		}
+
+		$timestamp = strtotime( $date );
+
+		if ( false === $timestamp ) {
+			return '—';
+		}
+
+		return esc_html(
+			wp_date(
+				get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+				$timestamp
+			)
+		);
+	}
+
+	/**
+	 * Return sortable columns.
+	 *
+	 * @return array<string, array<int, mixed>>
+	 */
+	protected function get_sortable_columns() {
+		return array(
+			'status'     => array( 'status', false ),
+			'name'       => array( 'name', false ),
+			'updated_at' => array( 'updated_at', true ),
+		);
+	}
+
+	/**
+	 * Sort workflow records.
+	 *
+	 * @param array<int, array<string, mixed>> $items Workflow records.
+	 * @return void
+	 */
+	private function sort_items( &$items ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$orderby = isset( $_REQUEST['orderby'] )
+			? sanitize_key( wp_unslash( $_REQUEST['orderby'] ) )
+			: 'updated_at';
+
+		$order = isset( $_REQUEST['order'] )
+			? strtolower( sanitize_key( wp_unslash( $_REQUEST['order'] ) ) )
+			: 'desc';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		if ( ! in_array( $order, array( 'asc', 'desc' ), true ) ) {
+			$order = 'desc';
+		}
+
+		$allowed_orderby = array(
+			'status',
+			'name',
+			'updated_at',
+		);
+
+		if ( ! in_array( $orderby, $allowed_orderby, true ) ) {
+			$orderby = 'updated_at';
+		}
+
+		usort(
+			$items,
+			static function ( $first, $second ) use ( $orderby, $order ) {
+				switch ( $orderby ) {
+					case 'status':
+						$first_value  = ! empty( $first['active'] ) ? 1 : 0;
+						$second_value = ! empty( $second['active'] ) ? 1 : 0;
+						break;
+
+					case 'name':
+						$first_value = isset( $first['name'] )
+							? strtolower( (string) $first['name'] )
+							: '';
+
+						$second_value = isset( $second['name'] )
+							? strtolower( (string) $second['name'] )
+							: '';
+						break;
+
+					case 'updated_at':
+					default:
+						$first_value = ! empty( $first['updatedAt'] )
+							? strtotime( (string) $first['updatedAt'] )
+							: 0;
+
+						$second_value = ! empty( $second['updatedAt'] )
+							? strtotime( (string) $second['updatedAt'] )
+							: 0;
+						break;
+				}
+
+				if ( $first_value === $second_value ) {
+					return 0;
+				}
+
+				$result = $first_value <=> $second_value;
+
+				return 'asc' === $order ? $result : -$result;
+			}
+		);
+	}
+
+	/**
+	 * Display controls above the workflow table.
+	 *
+	 * @param string $which Table position.
+	 * @return void
+	 */
+	protected function extra_tablenav( $which ) {
+		if ( 'top' !== $which ) {
+			return;
+		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$current_status = isset( $_REQUEST['workflow_status'] )
+			? sanitize_key( wp_unslash( $_REQUEST['workflow_status'] ) )
+			: '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		?>
+		<div class="alignleft actions">
+			<label class="screen-reader-text" for="dppa-workflow-status-filter">
+				<?php
+				esc_html_e(
+					'Filter workflows by status',
+					'digital-products-pro-automation'
+				);
+				?>
+			</label>
+
+			<select
+				id="dppa-workflow-status-filter"
+				name="workflow_status"
+			>
+				<option value="">
+					<?php
+					esc_html_e(
+						'All statuses',
+						'digital-products-pro-automation'
+					);
+					?>
+				</option>
+
+				<option
+					value="active"
+					<?php selected( $current_status, 'active' ); ?>
+				>
+					<?php
+					esc_html_e(
+						'Active',
+						'digital-products-pro-automation'
+					);
+					?>
+				</option>
+
+				<option
+					value="disabled"
+					<?php selected( $current_status, 'disabled' ); ?>
+				>
+					<?php
+					esc_html_e(
+						'Disabled',
+						'digital-products-pro-automation'
+					);
+					?>
+				</option>
+			</select>
+
+			<?php
+			submit_button(
+				__( 'Filter', 'digital-products-pro-automation' ),
+				'',
+				'filter_action',
+				false
+			);
+			?>
+		</div>
+		<?php
+	}
+}
