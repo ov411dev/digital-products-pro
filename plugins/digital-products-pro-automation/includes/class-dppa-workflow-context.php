@@ -17,12 +17,14 @@ final class DPPA_Workflow_Context {
 	/**
 	 * Build the workflow execution context.
 	 *
-	 * @return array
+	 * @param string $workflow_id N8n workflow ID.
+	 * @return array<string, mixed>
 	 */
-	public static function build() {
+	public static function build( $workflow_id ) {
+		$workflow_id  = sanitize_text_field( (string) $workflow_id );
 		$current_user = wp_get_current_user();
 
-		return array(
+		$context = array(
 			'source'    => 'wordpress',
 			'trigger'   => 'manual',
 
@@ -44,6 +46,18 @@ final class DPPA_Workflow_Context {
 			),
 
 			'timestamp' => gmdate( 'c' ),
+		);
+
+		/**
+		 * Filter the execution context sent to n8n.
+		 *
+		 * @param array<string, mixed> $context     Workflow execution context.
+		 * @param string               $workflow_id N8n workflow ID.
+		 */
+		return apply_filters(
+			'dppa_workflow_context',
+			$context,
+			$workflow_id
 		);
 	}
 }
