@@ -25,10 +25,11 @@ final class DPPA_Workflow_Runner {
 	/**
 	 * Run a workflow.
 	 *
-	 * @param string $workflow_id n8n workflow ID.
+	 * @param string               $workflow_id Workflow ID.
+	 * @param array<string, mixed> $parameters  Workflow parameters.
 	 * @return array<string, mixed>|WP_Error
 	 */
-	public function run( $workflow_id ) {
+	public function run( $workflow_id, $parameters = array() ) {
 		$workflow_id = sanitize_text_field( (string) $workflow_id );
 
 		if ( '' === $workflow_id ) {
@@ -66,7 +67,8 @@ final class DPPA_Workflow_Runner {
 
 		$request_body = array(
 			'workflow_id' => $workflow_id,
-			'context'     => DPPA_Workflow_Context::build(),
+			'context'     => DPPA_Workflow_Context::build( $workflow_id ),
+			'parameters'  => DPPA_Workflow_Parameters::build( $workflow_id, $parameters ),
 		);
 
 		$response = wp_remote_post(
