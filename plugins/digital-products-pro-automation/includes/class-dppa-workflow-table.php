@@ -266,15 +266,12 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 			$runner_workflow_id !== $workflow_id &&
 			'' !== DPPA_Settings::get_runner_webhook_url()
 		) {
-			$run_url = wp_nonce_url(
-				add_query_arg(
-					array(
-						'action'      => 'dppa_run_workflow',
-						'workflow_id' => $workflow_id,
-					),
-					admin_url( 'admin-post.php' )
+			$run_url = add_query_arg(
+				array(
+					'page'        => 'dppa-run-workflow',
+					'workflow_id' => $workflow_id,
 				),
-				'dppa_run_workflow_' . $workflow_id
+				admin_url( 'admin.php' )
 			);
 
 			$actions['run'] = sprintf(

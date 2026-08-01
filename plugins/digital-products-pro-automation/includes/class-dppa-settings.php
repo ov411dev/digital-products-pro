@@ -516,23 +516,28 @@ final class DPPA_Settings {
 				?>
 			</p>
 
-			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input
 					type="hidden"
 					name="action"
-					value="<?php echo esc_attr( self::TEST_ACTION ); ?>"
-				/>
+					value="dppa_run_workflow"
+				>
 
-				<?php wp_nonce_field( self::TEST_ACTION ); ?>
+				<input
+					type="hidden"
+					name="workflow_id"
+					value="<?php echo esc_attr( $workflow_id ); ?>"
+				>
 
 				<?php
-				submit_button(
-					__( 'Test connection', 'digital-products-pro-automation' ),
-					'secondary',
-					'submit',
-					false
+				wp_nonce_field(
+					'dppa_run_workflow_' . $workflow_id
 				);
 				?>
+
+				<!-- Parameter fields go here. -->
+
+				<?php submit_button( __( 'Run workflow', 'digital-products-pro-automation' ) ); ?>
 			</form>
 		</div>
 		<?php

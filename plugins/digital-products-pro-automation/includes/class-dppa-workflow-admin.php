@@ -45,7 +45,7 @@ final class DPPA_Workflow_Admin {
 	}
 
 	/**
-	 * Register the workflow submenu page.
+	 * Register the workflow admin pages.
 	 *
 	 * @return void
 	 */
@@ -57,6 +57,15 @@ final class DPPA_Workflow_Admin {
 			'manage_woocommerce',
 			'dppa-workflows',
 			array( __CLASS__, 'render_page' )
+		);
+
+		add_submenu_page(
+			null,
+			__( 'Run Workflow', 'digital-products-pro-automation' ),
+			__( 'Run Workflow', 'digital-products-pro-automation' ),
+			'manage_woocommerce',
+			'dppa-run-workflow',
+			array( __CLASS__, 'render_run_page' )
 		);
 	}
 
@@ -237,8 +246,8 @@ final class DPPA_Workflow_Admin {
 			);
 		}
 
-		$workflow_id = isset( $_GET['workflow_id'] )
-			? sanitize_text_field( wp_unslash( $_GET['workflow_id'] ) )
+		$workflow_id = isset( $_POST['workflow_id'] )
+			? sanitize_text_field( wp_unslash( $_POST['workflow_id'] ) )
 			: '';
 
 		if ( '' === $workflow_id ) {
@@ -255,8 +264,27 @@ final class DPPA_Workflow_Admin {
 			'dppa_run_workflow_' . $workflow_id
 		);
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parameters are normalized and sanitized against the workflow schema below.
+		$submitted_parameters = isset( $_POST['parameters'] ) &&
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parameters are normalized and sanitized against the workflow schema below.
+			is_array( $_POST['parameters'] )
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parameters are normalized and sanitized against the workflow schema below.
+			? wp_unslash( $_POST['parameters'] )
+			: array();
+
+		$schema = DPPA_Workflow_Parameter_Schema::get( $workflow_id );
+
+		$parameters = DPPA_Workflow_Parameter_Schema::normalize(
+			$submitted_parameters,
+			$schema
+		);
+
 		$runner = new DPPA_Workflow_Runner();
-		$result = $runner->run( $workflow_id );
+
+		$result = $runner->run(
+			$workflow_id,
+			$parameters
+		);
 
 		if ( is_wp_error( $result ) ) {
 			self::redirect_with_notice(
@@ -339,6 +367,330 @@ final class DPPA_Workflow_Admin {
 		<div class="<?php echo esc_attr( $class ); ?>">
 			<p><?php echo esc_html( $message ); ?></p>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Render the workflow parameter form.
+	 *
+	 * @return void
+	 */
+	public static function render_run_page() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die(
+				esc_html__(
+					'You do not have permission to run workflows.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only workflow identifier used to display the form.
+		$workflow_id = isset( $_GET['workflow_id'] )
+			? sanitize_text_field( wp_unslash( $_GET['workflow_id'] ) )
+			: '';
+
+		if ( '' === $workflow_id ) {
+			wp_die(
+				esc_html__(
+					'The workflow ID is missing.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+		$schema = DPPA_Workflow_Parameter_Schema::get( $workflow_id );
+		?>
+		<div class="wrap dppa-run-workflow-page">
+			<h1>
+				<?php
+				esc_html_e(
+					'Run Workflow',
+					'digital-products-pro-automation'
+				);
+				?>
+			</h1>
+
+			<form
+				method="post"
+				action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
+			>
+				<input
+					type="hidden"
+					name="action"
+					value="dppa_run_workflow"
+				>
+
+				<input
+					type="hidden"
+					name="workflow_id"
+					value="<?php echo esc_attr( $workflow_id ); ?>"
+				>
+
+				<?php
+				wp_nonce_field(
+					'dppa_run_workflow_' . $workflow_id
+				);
+				?>
+
+				<?php if ( empty( $schema ) ) : ?>
+					<div class="notice notice-info inline">
+						<p>
+							<?php
+							esc_html_e(
+								'This workflow does not define any parameters.',
+								'digital-products-pro-automation'
+							);
+							?>
+						</p>
+					</div>
+				<?php else : ?>
+					<table class="form-table" role="presentation">
+						<?php foreach ( $schema as $field_key => $field ) : ?>
+							<?php
+							if ( ! is_array( $field ) ) {
+								continue;
+							}
+
+							self::render_parameter_field(
+								(string) $field_key,
+								$field
+							);
+							?>
+						<?php endforeach; ?>
+					</table>
+				<?php endif; ?>
+
+				<?php
+				submit_button(
+					__(
+						'Run workflow',
+						'digital-products-pro-automation'
+					)
+				);
+				?>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render one workflow parameter field.
+	 *
+	 * @param string               $field_key Field key.
+	 * @param array<string, mixed> $field     Field definition.
+	 * @return void
+	 */
+	private static function render_parameter_field( $field_key, $field ) {
+		$type = isset( $field['type'] )
+			? sanitize_key( (string) $field['type'] )
+			: 'text';
+
+		$path = isset( $field['path'] ) && is_array( $field['path'] )
+			? array_map( 'sanitize_key', $field['path'] )
+			: array( sanitize_key( $field_key ) );
+
+		$input_name = self::build_parameter_input_name( $path );
+		$input_id   = 'dppa-parameter-' . implode( '-', $path );
+		$label      = isset( $field['label'] )
+			? (string) $field['label']
+			: $field_key;
+		$default    = $field['default'] ?? '';
+		?>
+		<tr>
+			<th scope="row">
+				<?php if ( 'checkbox' !== $type ) : ?>
+					<label for="<?php echo esc_attr( $input_id ); ?>">
+						<?php echo esc_html( $label ); ?>
+					</label>
+				<?php else : ?>
+					<?php echo esc_html( $label ); ?>
+				<?php endif; ?>
+			</th>
+
+			<td>
+				<?php
+				switch ( $type ) {
+					case 'checkbox':
+						self::render_checkbox_field(
+							$input_id,
+							$input_name,
+							$label,
+							(bool) $default
+						);
+						break;
+
+					case 'number':
+						self::render_number_field(
+							$input_id,
+							$input_name,
+							$default,
+							$field
+						);
+						break;
+
+					case 'select':
+						self::render_select_field(
+							$input_id,
+							$input_name,
+							$default,
+							$field
+						);
+						break;
+
+					case 'text':
+					default:
+						self::render_text_field(
+							$input_id,
+							$input_name,
+							$default,
+							$field
+						);
+						break;
+				}
+
+				if ( ! empty( $field['description'] ) ) :
+					?>
+					<p class="description">
+						<?php echo esc_html( (string) $field['description'] ); ?>
+					</p>
+				<?php endif; ?>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Build a nested parameters input name.
+	 *
+	 * @param string[] $path Parameter path.
+	 * @return string
+	 */
+	private static function build_parameter_input_name( $path ) {
+		$name = 'parameters';
+
+		foreach ( $path as $segment ) {
+			$name .= '[' . sanitize_key( $segment ) . ']';
+		}
+
+		return $name;
+	}
+
+	/**
+	 * Render a text parameter.
+	 *
+	 * @param string               $input_id   Input ID.
+	 * @param string               $input_name Input name.
+	 * @param mixed                $default_value    Default value.
+	 * @param array<string, mixed> $field      Field definition.
+	 * @return void
+	 */
+	private static function render_text_field(
+		$input_id,
+		$input_name,
+		$default_value,
+		$field
+	) {
+		?>
+		<input
+			type="text"
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+			value="<?php echo esc_attr( (string) $default_value ); ?>"
+			class="regular-text"
+			<?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>
+		>
+		<?php
+	}
+
+	/**
+	 * Render a number parameter.
+	 *
+	 * @param string               $input_id   Input ID.
+	 * @param string               $input_name Input name.
+	 * @param mixed                $default_value    Default value.
+	 * @param array<string, mixed> $field      Field definition.
+	 * @return void
+	 */
+	private static function render_number_field(
+		$input_id,
+		$input_name,
+		$default_value,
+		$field
+	) {
+		?>
+		<input
+			type="number"
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+			value="<?php echo esc_attr( (string) $default ); ?>"
+			min="<?php echo esc_attr( (string) ( $field['min'] ?? 0 ) ); ?>"
+			<?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>
+		>
+		<?php
+	}
+
+	/**
+	 * Render a checkbox parameter.
+	 *
+	 * @param string $input_id   Input ID.
+	 * @param string $input_name Input name.
+	 * @param string $label      Field label.
+	 * @param bool   $checked    Whether the field is checked.
+	 * @return void
+	 */
+	private static function render_checkbox_field(
+		$input_id,
+		$input_name,
+		$label,
+		$checked
+	) {
+		?>
+		<label for="<?php echo esc_attr( $input_id ); ?>">
+			<input
+				type="checkbox"
+				id="<?php echo esc_attr( $input_id ); ?>"
+				name="<?php echo esc_attr( $input_name ); ?>"
+				value="1"
+				<?php checked( $checked ); ?>
+			>
+			<?php echo esc_html( $label ); ?>
+		</label>
+		<?php
+	}
+
+	/**
+	 * Render a select parameter.
+	 *
+	 * @param string               $input_id   Input ID.
+	 * @param string               $input_name Input name.
+	 * @param mixed                $default_value    Default value.
+	 * @param array<string, mixed> $field      Field definition.
+	 * @return void
+	 */
+	private static function render_select_field(
+		$input_id,
+		$input_name,
+		$default_value,
+		$field
+	) {
+		$options = isset( $field['options'] ) &&
+			is_array( $field['options'] )
+			? $field['options']
+			: array();
+		?>
+		<select
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+		>
+			<?php foreach ( $options as $value => $option_label ) : ?>
+				<option
+					value="<?php echo esc_attr( (string) $value ); ?>"
+					<?php selected( (string) $default_value, (string) $value ); ?>
+				>
+					<?php echo esc_html( (string) $option_label ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
 		<?php
 	}
 }
