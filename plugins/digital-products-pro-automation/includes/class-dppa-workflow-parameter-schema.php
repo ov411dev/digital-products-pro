@@ -29,20 +29,21 @@ final class DPPA_Workflow_Parameter_Schema {
 		 */
 		if ( 'nkvH7Awqu2VGGXaz' === $workflow_id ) {
 			$schema = array(
-				'language'   => array(
-					'type'        => 'text',
-					'label'       => __(
+				'language'      => array(
+					'type'    => 'select',
+					'label'   => __(
 						'Language',
 						'digital-products-pro-automation'
 					),
-					'default'     => 'en',
-					'description' => __(
-						'Language code used by the workflow.',
-						'digital-products-pro-automation'
+					'default' => 'en',
+					'options' => array(
+						'en' => __( 'English', 'digital-products-pro-automation' ),
+						'fr' => __( 'French', 'digital-products-pro-automation' ),
+						'ru' => __( 'Russian', 'digital-products-pro-automation' ),
 					),
-					'required'    => true,
 				),
-				'category'   => array(
+
+				'category'      => array(
 					'type'        => 'text',
 					'label'       => __(
 						'Category',
@@ -55,7 +56,8 @@ final class DPPA_Workflow_Parameter_Schema {
 					),
 					'required'    => true,
 				),
-				'product_id' => array(
+
+				'product_id'    => array(
 					'type'        => 'number',
 					'label'       => __(
 						'Product ID',
@@ -68,7 +70,8 @@ final class DPPA_Workflow_Parameter_Schema {
 						'digital-products-pro-automation'
 					),
 				),
-				'publish'    => array(
+
+				'publish'       => array(
 					'type'    => 'checkbox',
 					'path'    => array( 'options', 'publish' ),
 					'label'   => __(
@@ -77,7 +80,8 @@ final class DPPA_Workflow_Parameter_Schema {
 					),
 					'default' => false,
 				),
-				'notify'     => array(
+
+				'notify'        => array(
 					'type'    => 'checkbox',
 					'path'    => array( 'options', 'notify' ),
 					'label'   => __(
@@ -85,6 +89,59 @@ final class DPPA_Workflow_Parameter_Schema {
 						'digital-products-pro-automation'
 					),
 					'default' => false,
+				),
+
+				'description'   => array(
+					'type'        => 'textarea',
+					'label'       => __(
+						'Description',
+						'digital-products-pro-automation'
+					),
+					'default'     => '',
+					'rows'        => 6,
+					'description' => __(
+						'Instructions passed to the workflow.',
+						'digital-products-pro-automation'
+					),
+				),
+
+				'contact_email' => array(
+					'type'        => 'email',
+					'label'       => __(
+						'Contact Email',
+						'digital-products-pro-automation'
+					),
+					'default'     => '',
+					'description' => __(
+						'Notification email address.',
+						'digital-products-pro-automation'
+					),
+				),
+
+				'source_url'    => array(
+					'type'        => 'url',
+					'label'       => __(
+						'Source URL',
+						'digital-products-pro-automation'
+					),
+					'default'     => '',
+					'description' => __(
+						'Optional source page or file URL.',
+						'digital-products-pro-automation'
+					),
+				),
+
+				'api_secret'    => array(
+					'type'        => 'password',
+					'label'       => __(
+						'API Secret',
+						'digital-products-pro-automation'
+					),
+					'default'     => '',
+					'description' => __(
+						'Temporary secret passed to this workflow run.',
+						'digital-products-pro-automation'
+					),
 				),
 			);
 		}
@@ -163,6 +220,46 @@ final class DPPA_Workflow_Parameter_Schema {
 							(string) ( $field['default'] ?? '' )
 						);
 					}
+					break;
+
+				case 'email':
+					$value = sanitize_email(
+						(string) (
+							null !== $value
+								? $value
+								: $field['default'] ?? ''
+						)
+					);
+					break;
+
+				case 'url':
+					$value = esc_url_raw(
+						(string) (
+							null !== $value
+								? $value
+								: $field['default'] ?? ''
+						)
+					);
+					break;
+
+				case 'textarea':
+					$value = sanitize_textarea_field(
+						(string) (
+							null !== $value
+								? $value
+								: $field['default'] ?? ''
+						)
+					);
+					break;
+
+				case 'password':
+					$value = sanitize_text_field(
+						(string) (
+							null !== $value
+								? $value
+								: $field['default'] ?? ''
+						)
+					);
 					break;
 
 				case 'text':
