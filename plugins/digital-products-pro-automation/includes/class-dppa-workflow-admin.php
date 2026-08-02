@@ -537,6 +537,41 @@ final class DPPA_Workflow_Admin {
 						);
 						break;
 
+					case 'textarea':
+						self::render_textarea_field(
+							$input_id,
+							$input_name,
+							$default_value,
+							$field
+						);
+						break;
+
+					case 'email':
+						self::render_email_field(
+							$input_id,
+							$input_name,
+							$default_value,
+							$field
+						);
+						break;
+
+					case 'url':
+						self::render_url_field(
+							$input_id,
+							$input_name,
+							$default_value,
+							$field
+						);
+						break;
+
+					case 'password':
+						self::render_password_field(
+							$input_id,
+							$input_name,
+							$field
+						);
+						break;
+
 					case 'text':
 					default:
 						self::render_text_field(
@@ -691,6 +726,112 @@ final class DPPA_Workflow_Admin {
 				</option>
 			<?php endforeach; ?>
 		</select>
+		<?php
+	}
+
+	/**
+	 * Render a textarea parameter.
+	 *
+	 * @param string               $input_id      Input ID.
+	 * @param string               $input_name    Input name.
+	 * @param mixed                $default_value Default value.
+	 * @param array<string, mixed> $field         Field definition.
+	 * @return void
+	 */
+	private static function render_textarea_field(
+		$input_id,
+		$input_name,
+		$default_value,
+		$field
+	) {
+		?>
+		<textarea
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+			rows="<?php echo esc_attr( (string) ( $field['rows'] ?? 5 ) ); ?>"
+			class="large-text"
+			<?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>
+		><?php echo esc_textarea( (string) $default_value ); ?></textarea>
+		<?php
+	}
+
+	/**
+	 * Render an email parameter.
+	 *
+	 * @param string               $input_id      Input ID.
+	 * @param string               $input_name    Input name.
+	 * @param mixed                $default_value Default value.
+	 * @param array<string, mixed> $field         Field definition.
+	 * @return void
+	 */
+	private static function render_email_field(
+		$input_id,
+		$input_name,
+		$default_value,
+		$field
+	) {
+		?>
+		<input
+			type="email"
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+			value="<?php echo esc_attr( (string) $default_value ); ?>"
+			class="regular-text"
+			<?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>
+		>
+		<?php
+	}
+
+	/**
+	 * Render a URL parameter.
+	 *
+	 * @param string               $input_id      Input ID.
+	 * @param string               $input_name    Input name.
+	 * @param mixed                $default_value Default value.
+	 * @param array<string, mixed> $field         Field definition.
+	 * @return void
+	 */
+	private static function render_url_field(
+		$input_id,
+		$input_name,
+		$default_value,
+		$field
+	) {
+		?>
+		<input
+			type="url"
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+			value="<?php echo esc_attr( (string) $default_value ); ?>"
+			class="regular-text"
+			<?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>
+		>
+		<?php
+	}
+
+	/**
+	 * Render a password parameter.
+	 *
+	 * @param string               $input_id   Input ID.
+	 * @param string               $input_name Input name.
+	 * @param array<string, mixed> $field      Field definition.
+	 * @return void
+	 */
+	private static function render_password_field(
+		$input_id,
+		$input_name,
+		$field
+	) {
+		?>
+		<input
+			type="password"
+			id="<?php echo esc_attr( $input_id ); ?>"
+			name="<?php echo esc_attr( $input_name ); ?>"
+			value=""
+			class="regular-text"
+			autocomplete="new-password"
+			<?php echo ! empty( $field['required'] ) ? 'required' : ''; ?>
+		>
 		<?php
 	}
 }
