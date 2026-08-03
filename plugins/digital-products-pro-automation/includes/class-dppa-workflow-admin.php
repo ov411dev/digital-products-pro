@@ -264,19 +264,33 @@ final class DPPA_Workflow_Admin {
 			'dppa_run_workflow_' . $workflow_id
 		);
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parameters are normalized and sanitized against the workflow schema below.
-		$submitted_parameters = isset( $_POST['parameters'] ) &&
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parameters are normalized and sanitized against the workflow schema below.
-			is_array( $_POST['parameters'] )
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Parameters are normalized and sanitized against the workflow schema below.
-			? wp_unslash( $_POST['parameters'] )
-			: array();
+		$submitted_parameters = array();
 
-		$schema = DPPA_Workflow_Parameter_Schema::get( $workflow_id );
+		if (
+			isset( $_POST['parameters'] ) &&
+			is_array( $_POST['parameters'] )
+		) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Values are normalized and sanitized against the remote workflow schema below.
+			$submitted_parameters = wp_unslash( $_POST['parameters'] );
+		}
+
+		$schema = DPPA_Workflow_Schema_Provider::get( $workflow_id );
+
+		if ( is_wp_error( $schema ) ) {
+			self::redirect_with_notice(
+				'error',
+				$schema->get_error_message()
+			);
+		}
+
+		$parameter_schema = isset( $schema['parameters'] ) &&
+			is_array( $schema['parameters'] )
+			? $schema['parameters']
+			: array();
 
 		$parameters = DPPA_Workflow_Parameter_Schema::normalize(
 			$submitted_parameters,
-			$schema
+			$parameter_schema
 		);
 
 		$runner = new DPPA_Workflow_Runner();
@@ -385,7 +399,7 @@ final class DPPA_Workflow_Admin {
 			);
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only workflow identifier used to display the form.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only workflow identifier used to render the form.
 		$workflow_id = isset( $_GET['workflow_id'] )
 			? sanitize_text_field( wp_unslash( $_GET['workflow_id'] ) )
 			: '';
@@ -398,77 +412,138 @@ final class DPPA_Workflow_Admin {
 				)
 			);
 		}
-		$schema = DPPA_Workflow_Parameter_Schema::get( $workflow_id );
+
+		$schema = DPPA_Workflow_Schema_Provider::get( $workflow_id );
+
+		$schema_error = is_wp_error( $schema )
+			? $schema->get_error_message()
+			: '';
+
+		$parameter_schema = ! is_wp_error( $schema ) &&
+			isset( $schema['parameters'] ) &&
+			is_array( $schema['parameters'] )
+			? $schema['parameters']
+			: array();
+
+		$schema_title = ! is_wp_error( $schema ) &&
+			isset( $schema['title'] )
+			? sanitize_text_field( (string) $schema['title'] )
+			: '';
+
+		$schema_description = ! is_wp_error( $schema ) &&
+			isset( $schema['description'] )
+			? sanitize_textarea_field( (string) $schema['description'] )
+			: '';
 		?>
 		<div class="wrap dppa-run-workflow-page">
 			<h1>
 				<?php
-				esc_html_e(
-					'Run Workflow',
-					'digital-products-pro-automation'
+				echo esc_html(
+					'' !== $schema_title
+						? $schema_title
+						: __(
+							'Run Workflow',
+							'digital-products-pro-automation'
+						)
 				);
 				?>
 			</h1>
 
-			<form
-				method="post"
-				action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
-			>
-				<input
-					type="hidden"
-					name="action"
-					value="dppa_run_workflow"
+			<?php if ( '' !== $schema_description ) : ?>
+				<p class="description">
+					<?php echo esc_html( $schema_description ); ?>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( '' !== $schema_error ) : ?>
+				<div class="notice notice-error inline">
+					<p><?php echo esc_html( $schema_error ); ?></p>
+				</div>
+			<?php else : ?>
+				<form
+					method="post"
+					action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
 				>
+					<input
+						type="hidden"
+						name="action"
+						value="dppa_run_workflow"
+					>
 
-				<input
-					type="hidden"
-					name="workflow_id"
-					value="<?php echo esc_attr( $workflow_id ); ?>"
+					<input
+						type="hidden"
+						name="workflow_id"
+						value="<?php echo esc_attr( $workflow_id ); ?>"
+					>
+
+					<?php
+					wp_nonce_field(
+						'dppa_run_workflow_' . $workflow_id
+					);
+					?>
+
+					<?php if ( empty( $parameter_schema ) ) : ?>
+						<div class="notice notice-info inline">
+							<p>
+								<?php
+								esc_html_e(
+									'This workflow does not define any parameters.',
+									'digital-products-pro-automation'
+								);
+								?>
+							</p>
+						</div>
+					<?php else : ?>
+						<table class="form-table" role="presentation">
+							<?php foreach ( $parameter_schema as $field_key => $field ) : ?>
+								<?php
+								if ( ! is_array( $field ) ) {
+									continue;
+								}
+
+								self::render_parameter_field(
+									(string) $field_key,
+									$field
+								);
+								?>
+							<?php endforeach; ?>
+						</table>
+					<?php endif; ?>
+
+					<?php
+					submit_button(
+						__(
+							'Run workflow',
+							'digital-products-pro-automation'
+						)
+					);
+					?>
+				</form>
+			<?php endif; ?>
+
+			<p>
+				<a
+					href="
+					<?php
+					echo esc_url(
+						add_query_arg(
+							array(
+								'page' => 'dppa-workflows',
+							),
+							admin_url( 'admin.php' )
+						)
+					);
+					?>
+					"
 				>
-
-				<?php
-				wp_nonce_field(
-					'dppa_run_workflow_' . $workflow_id
-				);
-				?>
-
-				<?php if ( empty( $schema ) ) : ?>
-					<div class="notice notice-info inline">
-						<p>
-							<?php
-							esc_html_e(
-								'This workflow does not define any parameters.',
-								'digital-products-pro-automation'
-							);
-							?>
-						</p>
-					</div>
-				<?php else : ?>
-					<table class="form-table" role="presentation">
-						<?php foreach ( $schema as $field_key => $field ) : ?>
-							<?php
-							if ( ! is_array( $field ) ) {
-								continue;
-							}
-
-							self::render_parameter_field(
-								(string) $field_key,
-								$field
-							);
-							?>
-						<?php endforeach; ?>
-					</table>
-				<?php endif; ?>
-
-				<?php
-				submit_button(
-					__(
-						'Run workflow',
+					<?php
+					esc_html_e(
+						'Back to workflows',
 						'digital-products-pro-automation'
-					)
-				);
-				?>
-			</form>
+					);
+					?>
+				</a>
+			</p>
 		</div>
 		<?php
 	}

@@ -50,10 +50,12 @@ final class DPPA_Settings {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+
 		add_filter(
 			'option_page_capability_dppa_settings_group',
 			array( __CLASS__, 'get_settings_capability' )
 		);
+
 		add_action(
 			'admin_post_' . self::TEST_ACTION,
 			array( __CLASS__, 'handle_test_connection' )
@@ -278,6 +280,20 @@ final class DPPA_Settings {
 			self::PAGE_SLUG,
 			'dppa_connection_section'
 		);
+
+		add_settings_field(
+			'dppa_schema_webhook_url',
+			__(
+				'Schema Webhook URL',
+				'digital-products-pro-automation'
+			),
+			array(
+				__CLASS__,
+				'render_schema_webhook_url_field',
+			),
+			self::PAGE_SLUG,
+			'dppa_connection_section'
+		);
 	}
 
 	/**
@@ -291,6 +307,7 @@ final class DPPA_Settings {
 			'api_key'            => '',
 			'runner_webhook_url' => '',
 			'runner_secret'      => '',
+			'schema_webhook_url' => '',
 		);
 	}
 
@@ -363,6 +380,10 @@ final class DPPA_Settings {
 			}
 		}
 
+		$output['schema_webhook_url'] = isset( $input['schema_webhook_url'] )
+			? esc_url_raw( $input['schema_webhook_url'] )
+			: '';
+
 		/*
 		* Connection-related values changed, so force fresh checks and data.
 		*/
@@ -394,6 +415,19 @@ final class DPPA_Settings {
 
 		return isset( $settings['runner_secret'] )
 			? (string) $settings['runner_secret']
+			: '';
+	}
+
+	/**
+	 * Get the schema webhook URL.
+	 *
+	 * @return string
+	 */
+	public static function get_schema_webhook_url() {
+		$settings = self::get_settings();
+
+		return isset( $settings['schema_webhook_url'] )
+			? (string) $settings['schema_webhook_url']
 			: '';
 	}
 
@@ -516,29 +550,31 @@ final class DPPA_Settings {
 				?>
 			</p>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<form
+				method="post"
+				action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
+			>
 				<input
 					type="hidden"
 					name="action"
-					value="dppa_run_workflow"
+					value="dppa_test_connection"
 				>
 
-				<input
-					type="hidden"
-					name="workflow_id"
-					value="<?php echo esc_attr( $workflow_id ); ?>"
-				>
+				<?php wp_nonce_field( 'dppa_test_connection' ); ?>
 
 				<?php
-				wp_nonce_field(
-					'dppa_run_workflow_' . $workflow_id
+				submit_button(
+					__(
+						'Test Connection',
+						'digital-products-pro-automation'
+					),
+					'secondary',
+					'submit',
+					false
 				);
 				?>
-
-				<!-- Parameter fields go here. -->
-
-				<?php submit_button( __( 'Run workflow', 'digital-products-pro-automation' ) ); ?>
 			</form>
+
 		</div>
 		<?php
 	}
@@ -659,6 +695,38 @@ final class DPPA_Settings {
 			}
 			?>
 		</p>
+		<?php
+	}
+
+	/**
+	 * Render the schema webhook URL field.
+	 *
+	 * @return void
+	 */
+	public static function render_schema_webhook_url_field() {
+		$settings = self::get_settings();
+		$value    = isset( $settings['schema_webhook_url'] )
+			? $settings['schema_webhook_url']
+			: '';
+		?>
+
+		<input
+			type="url"
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[schema_webhook_url]"
+			value="<?php echo esc_attr( $value ); ?>"
+			class="regular-text code"
+			placeholder="https://n8n.example.com/webhook/dppa-workflow-schema"
+		>
+
+		<p class="description">
+			<?php
+			esc_html_e(
+				'Webhook used to retrieve workflow parameter schemas from n8n.',
+				'digital-products-pro-automation'
+			);
+			?>
+		</p>
+
 		<?php
 	}
 }
