@@ -294,6 +294,20 @@ final class DPPA_Settings {
 			self::PAGE_SLUG,
 			'dppa_connection_section'
 		);
+
+		add_settings_field(
+			'dppa_discovery_webhook_url',
+			__(
+				'Discovery Webhook URL',
+				'digital-products-pro-automation'
+			),
+			array(
+				__CLASS__,
+				'render_discovery_webhook_url_field',
+			),
+			self::PAGE_SLUG,
+			'dppa_connection_section'
+		);
 	}
 
 	/**
@@ -303,11 +317,12 @@ final class DPPA_Settings {
 	 */
 	public static function get_defaults() {
 		return array(
-			'n8n_url'            => '',
-			'api_key'            => '',
-			'runner_webhook_url' => '',
-			'runner_secret'      => '',
-			'schema_webhook_url' => '',
+			'n8n_url'               => '',
+			'api_key'               => '',
+			'runner_webhook_url'    => '',
+			'runner_secret'         => '',
+			'schema_webhook_url'    => '',
+			'discovery_webhook_url' => '',
 		);
 	}
 
@@ -384,6 +399,10 @@ final class DPPA_Settings {
 			? esc_url_raw( $input['schema_webhook_url'] )
 			: '';
 
+		$output['discovery_webhook_url'] = isset( $input['discovery_webhook_url'] )
+			? esc_url_raw( $input['discovery_webhook_url'] )
+			: '';
+
 		/*
 		* Connection-related values changed, so force fresh checks and data.
 		*/
@@ -428,6 +447,19 @@ final class DPPA_Settings {
 
 		return isset( $settings['schema_webhook_url'] )
 			? (string) $settings['schema_webhook_url']
+			: '';
+	}
+
+	/**
+	 * Get the workflow discovery webhook URL.
+	 *
+	 * @return string
+	 */
+	public static function get_discovery_webhook_url() {
+		$settings = self::get_settings();
+
+		return isset( $settings['discovery_webhook_url'] )
+			? (string) $settings['discovery_webhook_url']
 			: '';
 	}
 
@@ -727,6 +759,36 @@ final class DPPA_Settings {
 			?>
 		</p>
 
+		<?php
+	}
+
+	/**
+	 * Render the workflow discovery webhook URL field.
+	 *
+	 * @return void
+	 */
+	public static function render_discovery_webhook_url_field() {
+		$settings = self::get_settings();
+		$value    = isset( $settings['discovery_webhook_url'] )
+			? (string) $settings['discovery_webhook_url']
+			: '';
+		?>
+		<input
+			type="url"
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[discovery_webhook_url]"
+			value="<?php echo esc_attr( $value ); ?>"
+			class="regular-text code"
+			placeholder="https://n8n.example.com/webhook/dppa-workflow-discovery"
+		>
+
+		<p class="description">
+			<?php
+			esc_html_e(
+				'Webhook used to retrieve the catalog of available DPPA workflows from n8n.',
+				'digital-products-pro-automation'
+			);
+			?>
+		</p>
 		<?php
 	}
 }
