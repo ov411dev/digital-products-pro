@@ -68,7 +68,7 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prepare table items.
+	 * Prepare workflow table items.
 	 *
 	 * @return void
 	 */
@@ -83,27 +83,27 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 			$sortable,
 		);
 
-		$response = $this->workflows->get_all( 250 );
+		$items = DPPA_Workflow_Discovery_Provider::get_all();
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $items ) ) {
 			$this->items = array();
 
 			add_settings_error(
 				'dppa_workflows',
-				'dppa_workflows_api_error',
-				$response->get_error_message(),
+				'dppa_workflow_discovery_error',
+				$items->get_error_message(),
 				'error'
 			);
 
 			return;
 		}
 
-		$items = $this->workflows->extract_items( $response );
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only table search parameter.
 		$search = isset( $_REQUEST['s'] )
 			? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) )
 			: '';
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
 		if ( '' !== $search ) {
 			$items = array_filter(
 				$items,
@@ -112,19 +112,35 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 						return false;
 					}
 
-					$name = isset( $item['name'] )
-						? (string) $item['name']
-						: '';
+					$searchable_values = array(
+						isset( $item['name'] )
+							? (string) $item['name']
+							: '',
+						isset( $item['description'] )
+							? (string) $item['description']
+							: '',
+						isset( $item['category'] )
+							? (string) $item['category']
+							: '',
+					);
 
-					return false !== stripos( $name, $search );
+					foreach ( $searchable_values as $value ) {
+						if ( false !== stripos( $value, $search ) ) {
+							return true;
+						}
+					}
+
+					return false;
 				}
 			);
 		}
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only table status filter.
 		$status_filter = isset( $_REQUEST['workflow_status'] )
 			? sanitize_key( wp_unslash( $_REQUEST['workflow_status'] ) )
 			: '';
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
 		if ( in_array( $status_filter, array( 'active', 'disabled' ), true ) ) {
 			$items = array_filter(
 				$items,
