@@ -59,6 +59,7 @@ final class DPPA_Plugin {
 		require_once DPPA_DIR . 'includes/class-dppa-workflow-context.php';
 		require_once DPPA_DIR . 'includes/class-dppa-workflow-parameters.php';
 		require_once DPPA_DIR . 'includes/class-dppa-workflow-runner.php';
+		require_once DPPA_DIR . 'includes/class-dppa-workflow-schema-provider.php';
 	}
 
 	/**
@@ -70,80 +71,6 @@ final class DPPA_Plugin {
 		DPPA_Settings::init();
 		DPPA_Dashboard_Provider::init();
 		DPPA_Workflow_Admin::init();
-
-		add_action(
-			'admin_post_dppa_run_workflow',
-			array( $this, 'handle_run_workflow' )
-		);
-	}
-
-	/**
-	 * Handle a workflow Run action from the WordPress admin.
-	 *
-	 * @return void
-	 */
-	public function handle_run_workflow() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die(
-				esc_html__(
-					'You are not allowed to run workflows.',
-					'digital-products-pro-automation'
-				),
-				esc_html__(
-					'Permission denied',
-					'digital-products-pro-automation'
-				),
-				array(
-					'response' => 403,
-				)
-			);
-		}
-
-		$workflow_id = isset( $_GET['workflow_id'] )
-			? sanitize_text_field( wp_unslash( $_GET['workflow_id'] ) )
-			: '';
-
-		if ( '' === $workflow_id ) {
-			$this->redirect_after_run(
-				'error',
-				__(
-					'The workflow ID is missing.',
-					'digital-products-pro-automation'
-				)
-			);
-		}
-
-		check_admin_referer(
-			'dppa_run_workflow_' . $workflow_id
-		);
-
-		$runner = new DPPA_Workflow_Runner();
-		$result = $runner->run( $workflow_id );
-
-		if ( is_wp_error( $result ) ) {
-			$this->redirect_after_run(
-				'error',
-				$result->get_error_message()
-			);
-		}
-
-		$message = __(
-			'Workflow executed successfully.',
-			'digital-products-pro-automation'
-		);
-
-		if (
-			isset( $result['message'] ) &&
-			is_string( $result['message'] ) &&
-			'' !== trim( $result['message'] )
-		) {
-			$message = sanitize_text_field( $result['message'] );
-		}
-
-		$this->redirect_after_run(
-			'success',
-			$message
-		);
 	}
 
 	/**
