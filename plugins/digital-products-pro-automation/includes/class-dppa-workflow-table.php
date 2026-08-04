@@ -59,11 +59,15 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'status'     => __( 'Status', 'digital-products-pro-automation' ),
-			'name'       => __( 'Workflow', 'digital-products-pro-automation' ),
-			'id'         => __( 'ID', 'digital-products-pro-automation' ),
-			'tags'       => __( 'Tags', 'digital-products-pro-automation' ),
-			'updated_at' => __( 'Updated', 'digital-products-pro-automation' ),
+			'status'      => __( 'Status', 'digital-products-pro-automation' ),
+			'name'        => __( 'Workflow', 'digital-products-pro-automation' ),
+			'description' => __( 'Description', 'digital-products-pro-automation' ),
+			'category'    => __( 'Category', 'digital-products-pro-automation' ),
+			'version'     => __( 'Version', 'digital-products-pro-automation' ),
+			'tags'        => __( 'Tags', 'digital-products-pro-automation' ),
+			'updated_at'  => __( 'Updated', 'digital-products-pro-automation' ),
+			'id'          => __( 'ID', 'digital-products-pro-automation' ),
+
 		);
 	}
 
@@ -333,6 +337,67 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 		}
 
 		return esc_html( implode( ', ', $tags ) );
+	}
+
+	/**
+	 * Render the workflow description.
+	 *
+	 * @param array<string, mixed> $item Workflow item.
+	 * @return string
+	 */
+	public function column_description( $item ) {
+		return ! empty( $item['description'] )
+			? esc_html( (string) $item['description'] )
+			: '&mdash;';
+	}
+
+	/**
+	 * Render the workflow category.
+	 *
+	 * @param array<string, mixed> $item Workflow item.
+	 * @return string
+	 */
+	public function column_category( $item ) {
+		return ! empty( $item['category'] )
+			? esc_html( (string) $item['category'] )
+			: '&mdash;';
+	}
+
+	/**
+	 * Render the workflow version.
+	 *
+	 * @param array<string, mixed> $item Workflow item.
+	 * @return string
+	 */
+	public function column_version( $item ) {
+		return ! empty( $item['version'] )
+			? esc_html( (string) $item['version'] )
+			: '&mdash;';
+	}
+
+	/**
+	 * Render the workflow update date.
+	 *
+	 * @param array<string, mixed> $item Workflow item.
+	 * @return string
+	 */
+	public function column_updated_at( $item ) {
+		if ( empty( $item['updated_at'] ) ) {
+			return '&mdash;';
+		}
+
+		$timestamp = strtotime( (string) $item['updated_at'] );
+
+		if ( false === $timestamp ) {
+			return '&mdash;';
+		}
+
+		return esc_html(
+			wp_date(
+				get_option( 'date_format' ),
+				$timestamp
+			)
+		);
 	}
 
 	/**

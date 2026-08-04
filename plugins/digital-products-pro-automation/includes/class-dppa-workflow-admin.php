@@ -117,7 +117,7 @@ final class DPPA_Workflow_Admin {
 			<p>
 				<?php
 				esc_html_e(
-					'Browse the workflows available in your connected n8n instance.',
+					'Browse the workflows published by your connected n8n discovery service.',
 					'digital-products-pro-automation'
 				);
 				?>
@@ -222,6 +222,7 @@ final class DPPA_Workflow_Admin {
 	 * @return string
 	 */
 	private static function get_refresh_url() {
+		DPPA_Workflow_Discovery_Provider::clear_cache();
 		return add_query_arg(
 			array(
 				'page'         => 'dppa-workflows',
@@ -910,3 +911,4 @@ final class DPPA_Workflow_Admin {
 		<?php
 	}
 }
+
