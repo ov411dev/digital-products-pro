@@ -203,6 +203,21 @@ final class DPPA_Workflow_Discovery_Provider {
 				continue;
 			}
 
+			$tags = array();
+
+			if ( isset( $workflow['tags'] ) && is_array( $workflow['tags'] ) ) {
+				$tags = array_values(
+					array_filter(
+						array_map(
+							static function ( $tag ) {
+								return sanitize_text_field( (string) $tag );
+							},
+							$workflow['tags']
+						)
+					)
+				);
+			}
+
 			$normalized[] = array(
 				'id'          => $id,
 				'name'        => $name,
@@ -216,6 +231,10 @@ final class DPPA_Workflow_Discovery_Provider {
 						(string) $workflow['version']
 					)
 					: '',
+				'updated_at'  => isset( $workflow['updated_at'] )
+					? sanitize_text_field( (string) $workflow['updated_at'] )
+					: '',
+				'tags'        => $tags,
 				'category'    => isset( $workflow['category'] )
 					? sanitize_key(
 						(string) $workflow['category']
