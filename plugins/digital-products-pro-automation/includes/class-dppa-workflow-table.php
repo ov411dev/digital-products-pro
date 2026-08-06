@@ -59,14 +59,15 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'status'      => __( 'Status', 'digital-products-pro-automation' ),
-			'name'        => __( 'Workflow', 'digital-products-pro-automation' ),
-			'description' => __( 'Description', 'digital-products-pro-automation' ),
-			'category'    => __( 'Category', 'digital-products-pro-automation' ),
-			'version'     => __( 'Version', 'digital-products-pro-automation' ),
-			'tags'        => __( 'Tags', 'digital-products-pro-automation' ),
-			'updated_at'  => __( 'Updated', 'digital-products-pro-automation' ),
-			'id'          => __( 'ID', 'digital-products-pro-automation' ),
+			'status'       => __( 'Status', 'digital-products-pro-automation' ),
+			'name'         => __( 'Workflow', 'digital-products-pro-automation' ),
+			'description'  => __( 'Description', 'digital-products-pro-automation' ),
+			'capabilities' => __( 'Capabilities', 'digital-products-pro-automation' ),
+			'category'     => __( 'Category', 'digital-products-pro-automation' ),
+			'version'      => __( 'Version', 'digital-products-pro-automation' ),
+			'tags'         => __( 'Tags', 'digital-products-pro-automation' ),
+			'updated_at'   => __( 'Updated', 'digital-products-pro-automation' ),
+			'id'           => __( 'ID', 'digital-products-pro-automation' ),
 		);
 	}
 
@@ -280,27 +281,51 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 		* Run workflow through the configured runner webhook.
 		*/
 		$runner_workflow_id = 'Lx8GCAUid8OBQYp5';
+
 		if (
 			'' !== $workflow_id &&
 			$runner_workflow_id !== $workflow_id &&
 			'' !== DPPA_Settings::get_runner_webhook_url()
 		) {
-			$run_url = add_query_arg(
-				array(
-					'page'        => 'dppa-run-workflow',
-					'workflow_id' => $workflow_id,
-				),
-				admin_url( 'admin.php' )
-			);
+			if ( $this->can_run_workflow( $item ) ) {
+				$run_url = add_query_arg(
+					array(
+						'page'        => 'dppa-run-workflow',
+						'workflow_id' => $workflow_id,
+					),
+					admin_url( 'admin.php' )
+				);
 
-			$actions['run'] = sprintf(
-				'<a href="%1$s" class="dppa-run-workflow">%2$s</a>',
-				esc_url( $run_url ),
-				esc_html__(
-					'Run',
+				$requires_confirmation = ! empty(
+					$item['requires_confirmation']
+				);
+
+				$actions['run'] = sprintf(
+					'<a href="%1$s" class="dppa-run-workflow" data-requires-confirmation="%2$s">%3$s</a>',
+					esc_url( $run_url ),
+					$requires_confirmation ? '1' : '0',
+					esc_html__(
+						'Run',
+						'digital-products-pro-automation'
+					)
+				);
+
+			} elseif ( ! empty( $item['maintenance'] ) ) {
+				$actions['unavailable'] = esc_html__(
+					'Maintenance',
 					'digital-products-pro-automation'
-				)
-			);
+				);
+			} elseif ( empty( $item['supports_manual_run'] ) ) {
+				$actions['unavailable'] = esc_html__(
+					'API only',
+					'digital-products-pro-automation'
+				);
+			} else {
+				$actions['unavailable'] = esc_html__(
+					'Unavailable',
+					'digital-products-pro-automation'
+				);
+			}
 		}
 
 		return sprintf(
@@ -309,7 +334,6 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 			$this->row_actions( $actions )
 		);
 	}
-
 	/**
 	 * Display workflow tags.
 	 *
@@ -397,6 +421,49 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 				$timestamp
 			)
 		);
+	}
+
+	/**
+	 * Render workflow capabilities.
+	 *
+	 * @param array<string, mixed> $item Workflow item.
+	 * @return string
+	 */
+	public function column_capabilities( $item ) {
+		$capabilities = array();
+
+		$execution_mode = isset( $item['execution_mode'] )
+			? sanitize_key( (string) $item['execution_mode'] )
+			: 'sync';
+
+		if ( ! empty( $item['maintenance'] ) ) {
+			$capabilities[] = __( 'Maintenance', 'digital-products-pro-automation' );
+		}
+
+		if ( ! empty( $item['deprecated'] ) ) {
+			$capabilities[] = __( 'Deprecated', 'digital-products-pro-automation' );
+		}
+
+		$capabilities[] = 'async' === $execution_mode
+			? __( 'Async', 'digital-products-pro-automation' )
+			: __( 'Sync', 'digital-products-pro-automation' );
+
+		$capabilities[] = ! empty( $item['supports_manual_run'] )
+			? __( 'Manual', 'digital-products-pro-automation' )
+			: __( 'API only', 'digital-products-pro-automation' );
+
+		if ( ! empty( $item['has_schema'] ) ) {
+			$capabilities[] = __( 'Schema', 'digital-products-pro-automation' );
+		}
+
+		if ( ! empty( $item['requires_confirmation'] ) ) {
+			$capabilities[] = __(
+				'Confirmation required',
+				'digital-products-pro-automation'
+			);
+		}
+
+		return esc_html( implode( ' · ', $capabilities ) );
 	}
 
 	/**
@@ -595,5 +662,18 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 			?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Determine whether a workflow can be run manually.
+	 *
+	 * @param array<string, mixed> $workflow Workflow data.
+	 * @return bool
+	 */
+	private function can_run_workflow( $workflow ) {
+		return ! empty( $workflow['active'] ) &&
+			! empty( $workflow['runnable'] ) &&
+			! empty( $workflow['supports_manual_run'] ) &&
+			empty( $workflow['maintenance'] );
 	}
 }
