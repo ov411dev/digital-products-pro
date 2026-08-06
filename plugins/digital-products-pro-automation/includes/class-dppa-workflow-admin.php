@@ -202,18 +202,22 @@ final class DPPA_Workflow_Admin {
 		wp_add_inline_script(
 			'dppa-workflow-admin',
 			'
-            document.addEventListener("click", function (event) {
-                const link = event.target.closest(".dppa-run-workflow");
+			document.addEventListener("click", function (event) {
+				const link = event.target.closest(".dppa-run-workflow");
 
-                if (!link) {
-                    return;
-                }
+				if (!link) {
+					return;
+				}
 
-                if (!window.confirm("Run this workflow now?")) {
-                    event.preventDefault();
-                }
-            });
-            '
+				if (link.dataset.requiresConfirmation !== "1") {
+					return;
+				}
+
+				if (!window.confirm("Run this workflow now?")) {
+					event.preventDefault();
+				}
+			});
+			'
 		);
 	}
 
