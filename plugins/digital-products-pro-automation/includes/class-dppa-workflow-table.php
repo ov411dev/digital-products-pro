@@ -67,7 +67,6 @@ final class DPPA_Workflow_Table extends WP_List_Table {
 			'tags'        => __( 'Tags', 'digital-products-pro-automation' ),
 			'updated_at'  => __( 'Updated', 'digital-products-pro-automation' ),
 			'id'          => __( 'ID', 'digital-products-pro-automation' ),
-
 		);
 	}
 
