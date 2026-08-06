@@ -76,8 +76,9 @@ final class DPPA_Workflow_Admin {
 	 */
 	public static function render_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die(
-				esc_html__(
+			self::redirect_with_notice(
+				'error',
+				__(
 					'You do not have permission to access this page.',
 					'digital-products-pro-automation'
 				)
@@ -239,8 +240,9 @@ final class DPPA_Workflow_Admin {
 	 */
 	public static function handle_run_workflow() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die(
-				esc_html__(
+			self::redirect_with_notice(
+				'error',
+				__(
 					'You do not have permission to run workflows.',
 					'digital-products-pro-automation'
 				)
@@ -264,6 +266,56 @@ final class DPPA_Workflow_Admin {
 		check_admin_referer(
 			'dppa_run_workflow_' . $workflow_id
 		);
+
+		$workflow = DPPA_Workflow_Discovery_Provider::get(
+			$workflow_id,
+			true
+		);
+
+		if ( is_wp_error( $workflow ) ) {
+			self::redirect_with_notice(
+				'error',
+				$workflow->get_error_message()
+			);
+		}
+
+		$minimum_capability = isset( $workflow['minimum_capability'] )
+			? (string) $workflow['minimum_capability']
+			: 'manage_woocommerce';
+
+		if ( ! current_user_can( $minimum_capability ) ) {
+			self::redirect_with_notice(
+				'error',
+				__(
+					'You do not have permission to run this workflow.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		if (
+			empty( $workflow['active'] ) ||
+			empty( $workflow['runnable'] ) ||
+			empty( $workflow['supports_manual_run'] )
+		) {
+			self::redirect_with_notice(
+				'error',
+				__(
+					'This workflow is not available for manual execution.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		if ( ! empty( $workflow['maintenance'] ) ) {
+			self::redirect_with_notice(
+				'error',
+				__(
+					'This workflow is temporarily unavailable due to maintenance.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
 
 		$submitted_parameters = array();
 
@@ -392,9 +444,10 @@ final class DPPA_Workflow_Admin {
 	 */
 	public static function render_run_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die(
-				esc_html__(
-					'You do not have permission to run workflows.',
+			self::redirect_with_notice(
+				'error',
+				__(
+					'You do not have permission to run this workflow.',
 					'digital-products-pro-automation'
 				)
 			);
@@ -406,9 +459,57 @@ final class DPPA_Workflow_Admin {
 			: '';
 
 		if ( '' === $workflow_id ) {
-			wp_die(
-				esc_html__(
+			self::redirect_with_notice(
+				'error',
+				__(
 					'The workflow ID is missing.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		$workflow = DPPA_Workflow_Discovery_Provider::get( $workflow_id );
+
+		if ( is_wp_error( $workflow ) ) {
+			self::redirect_with_notice(
+				'error',
+				$workflow->get_error_message()
+			);
+		}
+
+		$minimum_capability = isset( $workflow['minimum_capability'] )
+			? (string) $workflow['minimum_capability']
+			: 'manage_woocommerce';
+
+		if ( ! current_user_can( $minimum_capability ) ) {
+			self::redirect_with_notice(
+				'error',
+				__(
+					'You do not have permission to run this workflow.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		if (
+			empty( $workflow['active'] ) ||
+			empty( $workflow['runnable'] ) ||
+			empty( $workflow['supports_manual_run'] )
+		) {
+			self::redirect_with_notice(
+				'error',
+				__(
+					'This workflow is not available for manual execution.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		if ( ! empty( $workflow['maintenance'] ) ) {
+			self::redirect_with_notice(
+				'error',
+				__(
+					'This workflow is temporarily unavailable due to maintenance.',
 					'digital-products-pro-automation'
 				)
 			);

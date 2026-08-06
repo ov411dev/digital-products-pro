@@ -24,13 +24,18 @@ final class DPPA_Workflow_Discovery_Provider {
 	/**
 	 * Get all discoverable workflows.
 	 *
+	 * @param bool $force_refresh Whether to bypass the cached catalog.
 	 * @return array<int, array<string, mixed>>|WP_Error
 	 */
-	public static function get_all() {
-		$cached = get_transient( self::CACHE_KEY );
+	public static function get_all( $force_refresh = false ) {
+		if ( $force_refresh ) {
+			self::clear_cache();
+		} else {
+			$cached = get_transient( self::CACHE_KEY );
 
-		if ( is_array( $cached ) ) {
-			return $cached;
+			if ( is_array( $cached ) ) {
+				return $cached;
+			}
 		}
 
 		$workflows = self::fetch();
@@ -219,36 +224,111 @@ final class DPPA_Workflow_Discovery_Provider {
 			}
 
 			$normalized[] = array(
-				'id'          => $id,
-				'name'        => $name,
-				'description' => isset( $workflow['description'] )
+				'id'                    => $id,
+				'name'                  => $name,
+				'description'           => isset( $workflow['description'] )
 					? sanitize_textarea_field(
 						(string) $workflow['description']
 					)
 					: '',
-				'version'     => isset( $workflow['version'] )
+				'version'               => isset( $workflow['version'] )
 					? sanitize_text_field(
 						(string) $workflow['version']
 					)
 					: '',
-				'updated_at'  => isset( $workflow['updated_at'] )
+				'updated_at'            => isset( $workflow['updated_at'] )
 					? sanitize_text_field( (string) $workflow['updated_at'] )
 					: '',
-				'tags'        => $tags,
-				'category'    => isset( $workflow['category'] )
+				'tags'                  => $tags,
+				'category'              => isset( $workflow['category'] )
 					? sanitize_key(
 						(string) $workflow['category']
 					)
 					: '',
-				'active'      => isset( $workflow['active'] )
+				'active'                => isset( $workflow['active'] )
 					? rest_sanitize_boolean( $workflow['active'] )
 					: false,
-				'has_schema'  => isset( $workflow['has_schema'] )
+				'has_schema'            => isset( $workflow['has_schema'] )
 					? rest_sanitize_boolean( $workflow['has_schema'] )
 					: false,
+				'schema_version'        => isset( $workflow['schema_version'] )
+					? sanitize_text_field( (string) $workflow['schema_version'] )
+					: '',
+				'runnable'              => isset( $workflow['runnable'] )
+					? rest_sanitize_boolean( $workflow['runnable'] )
+					: false,
+				'supports_manual_run'   => isset( $workflow['supports_manual_run'] )
+					? rest_sanitize_boolean( $workflow['supports_manual_run'] )
+					: false,
+				'requires_confirmation' => isset( $workflow['requires_confirmation'] )
+					? rest_sanitize_boolean( $workflow['requires_confirmation'] )
+					: false,
+				'execution_mode'        => isset( $workflow['execution_mode'] )
+					? sanitize_key( (string) $workflow['execution_mode'] )
+					: 'sync',
+				'timeout_seconds'       => isset( $workflow['timeout_seconds'] )
+					? absint( $workflow['timeout_seconds'] )
+					: 30,
+				'minimum_capability'    => isset( $workflow['minimum_capability'] )
+					? sanitize_key( (string) $workflow['minimum_capability'] )
+					: 'manage_woocommerce',
+				'maintenance'           => isset( $workflow['maintenance'] )
+					? rest_sanitize_boolean( $workflow['maintenance'] )
+					: false,
+				'deprecated'            => isset( $workflow['deprecated'] )
+					? rest_sanitize_boolean( $workflow['deprecated'] )
+					: false,
 			);
+			if ( ! in_array( $execution_mode, array( 'sync', 'async' ), true ) ) {
+				$execution_mode = 'sync';
+			}
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Get one discovered workflow by ID.
+	 *
+	 * @param string $workflow_id  Workflow ID.
+	 * @param bool   $force_refresh Whether to bypass the cached catalog.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function get( $workflow_id, $force_refresh = false ) {
+		$workflow_id = sanitize_text_field( (string) $workflow_id );
+
+		if ( '' === $workflow_id ) {
+			return new WP_Error(
+				'dppa_missing_workflow_id',
+				__(
+					'The workflow ID is missing.',
+					'digital-products-pro-automation'
+				)
+			);
+		}
+
+		$workflows = self::get_all( $force_refresh );
+
+		if ( is_wp_error( $workflows ) ) {
+			return $workflows;
+		}
+
+		foreach ( $workflows as $workflow ) {
+			if (
+				is_array( $workflow ) &&
+				isset( $workflow['id'] ) &&
+				$workflow_id === $workflow['id']
+			) {
+				return $workflow;
+			}
+		}
+
+		return new WP_Error(
+			'dppa_workflow_not_discovered',
+			__(
+				'The requested workflow is not available in the discovery catalog.',
+				'digital-products-pro-automation'
+			)
+		);
 	}
 }
